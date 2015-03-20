@@ -231,7 +231,7 @@ void computeMinimax(){
 		char to_col_act = bestMove.to_col + 'A';
 		int to_row_act = bestMove.to_row + 1;
 		
-		cout << "I moved from " << from_col_act  << from_row_act << " to " << to_col_act << to_row_act << endl;
+		cout << "I moved from " << from_col_act  << from_row_act << " to " << to_col_act << to_row_act << "(" << to_col_act << (8 - to_row_act)<<")"<<endl;
 
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " to make this decision" << endl;
