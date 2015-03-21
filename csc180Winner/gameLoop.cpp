@@ -199,6 +199,7 @@ void computeMinimax(){
 	Move bestMove;
 
 	vector<Move> moves;
+	moves.reserve(20);
 	getPossibleMovesMax(moves);
 	if (moves.size() == 0){
 		gameOver(false);
@@ -246,6 +247,7 @@ void computeMinimax(){
 int min(int depth, int maxFoundSoFar){
 	
 	vector<Move> moves;
+	moves.reserve(20);
 	getPossibleMovesMin(moves);
 	if (moves.size() == 0){
 		//human can't move, so I win
@@ -281,6 +283,7 @@ int min(int depth, int maxFoundSoFar){
 int max(int depth, int minFoundSoFar){
 	
 	vector<Move> moves;
+	moves.reserve(20);
 	getPossibleMovesMax(moves);
 	if (moves.size() == 0){
 		//I can't move, so human wins
@@ -312,7 +315,6 @@ int max(int depth, int minFoundSoFar){
 			}
 		}
 	}
-
 	return bestScore;
 }
 void setup(){
