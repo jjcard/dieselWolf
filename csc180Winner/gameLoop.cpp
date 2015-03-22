@@ -199,7 +199,7 @@ void computeMinimax(){
 	Move bestMove;
 
 	vector<Move> moves;
-	moves.reserve(20);
+	moves.reserve(38);
 	getPossibleMovesMax(moves);
 	if (moves.size() == 0){
 		gameOver(false);
