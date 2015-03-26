@@ -25,24 +25,24 @@ struct Piece {
 		fuel = 3;
 	}
 };
-struct Move {
-	int from_row;
-	int from_col;
-	int to_row;
-	int to_col;
-
-	//int from_fuel;
-	//Piece piece_taken;
-	Move(){
-
-	}
-	Move(int from_row_i, int from_col_i, int to_row_i, int to_col_i){
-		from_row = from_row_i;
-		from_col = from_col_i;
-		to_row = to_row_i;
-		to_col = to_col_i;
-	}
-};
+//struct Move {
+//	int from_row;
+//	int from_col;
+//	int to_row;
+//	int to_col;
+//
+//	//int from_fuel;
+//	//Piece piece_taken;
+//	Move(){
+//
+//	}
+//	Move(int from_row_i, int from_col_i, int to_row_i, int to_col_i){
+//		from_row = from_row_i;
+//		from_col = from_col_i;
+//		to_row = to_row_i;
+//		to_col = to_col_i;
+//	}
+//};
 void computeMinimax();
 int min(int depth, int maxFoundSoFar);
 int max(int depth, int minFoundSoFar);
@@ -50,25 +50,25 @@ int evaluate();
 void getPlayerMove();
 void setup();
 void printboard();
-void makeMove(Move &m, int pieceTaken[]);
-void retractMove(Move &m, int pieceTaken[]);
-void getPossibleMovesMin(vector<Move> &re);
-void getPossibleMovesMax(vector<Move> &re);
+void makeMove(int move[], int pieceTaken[]);
+void retractMove(int move[], int pieceTaken[]);
+int getPossibleMovesMin(int re[][4]);
+int getPossibleMovesMax(int re[][4]);
 bool moveInBounds(int to_col, int to_row);
-void moveKnight(vector<Move> &re, int i, int j, int kingVal);
-void moveKing(vector<Move> &re, int i, int j);
-void moveBishop(vector<Move> &re, int i, int j, int kingVal);
+void moveKnight(int re[][4], int &count, int i, int j, int kingVal);
+void moveKing(int re[][4], int &count, int i, int j);
+void moveBishop(int re[][4], int &count, int i, int j, int kingVal);
 void testKnight();
 void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, int> values[]);
 void clearPosition(int row, int col);
 void testKing();
 void testBishop();
 void testQueen();
-vector<Move>::iterator foundMove(vector<Move> &moves, int to_row, int to_col);
-vector<Move>::iterator foundWholeMove(vector<Move> &moves, int to_row, int to_col, int from_row, int from_col);
+int foundMove(int re[][4], int count, int to_row, int to_col);
+bool foundWholeMove(int re[][4], int count, int to_row, int to_col, int from_row, int from_col);
 void testPostSetUp();
 void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]);
-bool isMovePossibleMin(vector<Move> &moves, int from_row, int from_col, int to_row, int to_col);
+bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int to_row, int to_col);
 void gameOver(bool maxPlayerOne);
 bool isPlayerGoingFirst();
 char getPrintValue(int value);
@@ -139,6 +139,9 @@ const int maxDepth = 5;
 int evalCount = 0;
 clock_t start;
 double duration;
+unsigned int minimaxMoveCount = 0;
+unsigned int maxMoveCount = 0;
+unsigned int minMoveCount = 0;
 int main(){
 	if (test){
 		testKnight();
@@ -196,19 +199,23 @@ void computeMinimax(){
 	start = clock();
 	int bestScore = BEST_MIN;// depth = 1;
 	evalCount = 0;
-	Move bestMove;
+	int *bestMove;
 
-	vector<Move> moves;
-	moves.reserve(38);
-	getPossibleMovesMax(moves);
-	if (moves.size() == 0){
+	int moves[53][4] ;
+	//moves.reserve(38);
+	int count = getPossibleMovesMax(moves);
+	if (count == 0){
 		gameOver(false);
 	}
 	else {
+		//if (moves.size() > minimaxMoveCount){
+		//	minimaxMoveCount = moves.size();
+		//}
 		int curScore;
 		int pieceTaken[3];
-		for (Move m : moves){
-			makeMove(m, pieceTaken);
+		//for (Move m : moves){
+		for (int i = 0; i < count; i++){
+			makeMove(moves[i], pieceTaken);
 			if (pieceTaken[0] == KING_MIN){
 				//taken their king!
 				curScore = WIN_MAX;
@@ -219,23 +226,27 @@ void computeMinimax(){
 			}
 			if (curScore > bestScore){
 				bestScore = curScore;
-				bestMove = m;
+				bestMove = moves[i];
 			}
-			retractMove(m, pieceTaken);
+			retractMove(moves[i], pieceTaken);
 		}
 		//make the best move
 		makeMove(bestMove, pieceTaken);
 
 		//print out move in notation of screen coordinites
-		char from_col_act = bestMove.from_col+ 'A';
-		int from_row_act = bestMove.from_row + 1;
-		char to_col_act = bestMove.to_col + 'A';
-		int to_row_act = bestMove.to_row + 1;
+		
+		int from_row_act = bestMove[0] + 1;
+		char from_col_act = bestMove[1]+ 'A';
+		
+		int to_row_act = bestMove[2] + 1;
+		char to_col_act = bestMove[3] + 'A';
 		
 		cout << "I moved from " << from_col_act << from_row_act << " to " << to_col_act << to_row_act << "(" << from_col_act << (8 - from_row_act) << " to " << to_col_act << (8 - to_row_act) << ")" << endl;
 
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
-		cout << "It took " << duration << " to make this decision" << endl;
+		cout << "It took " << duration << " seconds to make this decision" << endl;
+
+		cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
@@ -246,21 +257,24 @@ void computeMinimax(){
 }
 int min(int depth, int maxFoundSoFar){
 	
-	vector<Move> moves;
-	moves.reserve(20);
-	getPossibleMovesMin(moves);
-	if (moves.size() == 0){
+	int moves[53][4];
+	//moves.reserve(20);
+	int count = getPossibleMovesMin(moves);
+	if (count == 0){
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
+	//if (moves.size() > minMoveCount){
+	//	minMoveCount = moves.size();
+	//}
 	if (depth == maxDepth){ return evaluate();}
 	int bestScore = BEST_MAX;
 
 	
 	int curScore;
 	int pieceTaken[3];
-	for (Move m : moves){
-		makeMove(m, pieceTaken);
+	for (int i = 0; i < count; i++){
+		makeMove(moves[i], pieceTaken);
 		if (pieceTaken[0] == KING_MAX){
 			//taken my king!
 			curScore = WIN_MIN + depth;
@@ -269,7 +283,7 @@ int min(int depth, int maxFoundSoFar){
 			curScore = max(depth + 1, bestScore);
 		}
 
-		retractMove(m, pieceTaken);		
+		retractMove(moves[i], pieceTaken);
 		if (curScore < bestScore){
 			bestScore = curScore;
 			if (bestScore <= maxFoundSoFar){
@@ -282,21 +296,24 @@ int min(int depth, int maxFoundSoFar){
 }
 int max(int depth, int minFoundSoFar){
 	
-	vector<Move> moves;
-	moves.reserve(20);
-	getPossibleMovesMax(moves);
-	if (moves.size() == 0){
+	int moves[53][4];
+	//moves.reserve(20);
+	int count = getPossibleMovesMax(moves);
+	if (count == 0){
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
+	//if (moves.size() > maxMoveCount){
+	//	maxMoveCount = moves.size();
+	//}
 	if (depth == maxDepth){ return evaluate(); }
 	int bestScore = BEST_MIN;
 
 	
 	int curScore;
 	int pieceTaken[3];
-	for (Move m : moves){
-		makeMove(m, pieceTaken);
+	for (int i = 0; i < count; i++){
+		makeMove(moves[i], pieceTaken);
 
 		if (pieceTaken[0] == KING_MIN){
 			//taken their king!
@@ -306,7 +323,7 @@ int max(int depth, int minFoundSoFar){
 			curScore = min(depth + 1, bestScore);
 		}
 
-		retractMove(m, pieceTaken);		
+		retractMove(moves[i], pieceTaken);
 		if (curScore > bestScore){
 			bestScore = curScore;
 			if (bestScore >= minFoundSoFar){
@@ -362,17 +379,20 @@ void gameOver(bool maxPlayerOne){
 	else {
 		cout << "You won" << endl;
 	}
+	cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 	char anyChar;
 	cout << "Press any key to end";
 	cin >> anyChar;
+
 	exit(0);
 }
 //gets, validates and makes the players move
 void getPlayerMove(){
 	
-	vector<Move> moves;
-	getPossibleMovesMin(moves);
-	if (moves.size() == 0){
+	//vector<Move> moves;
+	int moves[53][4];
+	int count = getPossibleMovesMin(moves);
+	if (count == 0){
 		//he has no moves, I win
 		gameOver(true);
 	}
@@ -389,7 +409,7 @@ void getPlayerMove(){
 		int to_col_act = to_col - 'A';
 
 		cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
-		while (!isMovePossibleMin(moves, from_row_act, from_col_act, to_row_act, to_col_act)){
+		while (!isMovePossibleMin(moves, count, from_row_act, from_col_act, to_row_act, to_col_act)){
 			cout << "Move not legal, please enter another move: ";
 			cin >> from_col >> from_row >> to_col >> to_row;
 
@@ -401,7 +421,8 @@ void getPlayerMove(){
 			cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		}
 
-		Move m = Move(from_row_act, from_col_act, to_row_act, to_col_act);
+		//Move m = Move(from_row_act, from_col_act, to_row_act, to_col_act);
+		int m[4] = { from_row_act, from_col_act, to_row_act, to_col_act };
 		int pieceTaken[3];
 		makeMove(m, pieceTaken);
 
@@ -412,14 +433,14 @@ void getPlayerMove(){
 	}
 }
 //makes the move on the board
-void makeMove(Move &m, int pieceTaken[] ){
+void makeMove(int move[], int pieceTaken[]){
 	//stub for now
-	Piece p = b[m.from_row][m.from_col];
-	//m.piece_taken = b[m.to_row][m.to_col];
-	pieceTaken[0] = b[m.to_row][m.to_col].value;
-	pieceTaken[1] = b[m.to_row][m.to_col].fuel;
-	b[m.from_row][m.from_col].value = 0;
-	//b[m.from_row][m.from_col].printValue = '-';
+	Piece p = b[move[0]][move[1]];
+	//m.piece_taken = b[move[2]][move[3]];
+	pieceTaken[0] = b[move[2]][move[3]].value;
+	pieceTaken[1] = b[move[2]][move[3]].fuel;
+	b[move[0]][move[1]].value = 0;
+	//b[move[0]][move[1]].printValue = '-';
 	pieceTaken[2] = p.fuel;
 	if (pieceTaken[0] != 0){
 		//aka an actual piece
@@ -428,18 +449,24 @@ void makeMove(Move &m, int pieceTaken[] ){
 	else {
 		p.fuel--;
 	}
-	b[m.to_row][m.to_col] = p;
+	b[move[2]][move[3]] = p;
 }
-void retractMove(Move &m, int pieceTaken[]){
-	//stub for now
-
-	Piece p = b[m.to_row][m.to_col];
+void retractMove(int move[], int pieceTaken[]){
+	
+	//pieceTaken[0] = taken's value
+	//pieceTaken[1] = taken's fuel
+	//pieceTaken[2] = mover's old fuel;
+	//move[0] == from_row
+	//move[1] == from_col
+	//move[2] == to_row
+	//move[3] == to_col
+	Piece p = b[move[2]][move[3]];
 	p.fuel = pieceTaken[2];
-	b[m.from_row][m.from_col] = p;
-	b[m.to_row][m.to_col].value = pieceTaken[0];
-	b[m.to_row][m.to_col].fuel = pieceTaken[1];
+	b[move[0]][move[1]] = p;
+	b[move[2]][move[3]].value = pieceTaken[0];
+	b[move[2]][move[3]].fuel = pieceTaken[1];
 }
-void getPossibleMovesMax(vector<Move> &re){
+int getPossibleMovesMax(int re[][4]){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 	//[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
 	//[4, 0] [4, 1] [4, 2] [4, 3] [4, 4] [4, 5] [4, 6] [4, 7]
@@ -448,6 +475,8 @@ void getPossibleMovesMax(vector<Move> &re){
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 	//vector<Move> re;
+
+	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
 		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j].value > 0 && b[i][j].fuel > 0){
@@ -455,17 +484,17 @@ void getPossibleMovesMax(vector<Move> &re){
 				int value = b[i][j].value;
 
 				if (value == KING_MAX){
-					moveKing(re, i, j);
+					moveKing(re, count, i, j);
 				}
 				else if (value == QUEEN_MAX){
-					moveKnight(re, i, j, KING_MAX);
-					moveBishop(re, i, j, KING_MAX);
+					moveKnight(re, count, i, j, KING_MAX);
+					moveBishop(re, count, i, j, KING_MAX);
 				}
 				else if (value == KNIGHT_MAX){
-					moveKnight(re, i, j, KING_MAX);
+					moveKnight(re, count, i, j, KING_MAX);
 				}
 				else if (value == BISHOP_MAX){
-					moveBishop(re, i, j, KING_MAX);
+					moveBishop(re, count, i, j, KING_MAX);
 				}
 				else {
 					//this shouldn't happen
@@ -475,120 +504,189 @@ void getPossibleMovesMax(vector<Move> &re){
 
 		}
 	}
+	return count;
 }
-void getPossibleMovesMin(vector<Move> &re){
-		//min player turn
-		for (int i = 0; i < BOARD_ROWS; i++){
-			for (int j = 0; j < BOARD_COLS; j++){
-				if (b[i][j].value < 0 && b[i][j].fuel > 0){
-					//aka is a min piece
-					//aka is a max piece and it can move
-					int value = b[i][j].value;
+int getPossibleMovesMin(int re[][4]){
+	//min player turn
+	int count = 0;
+	for (int i = 0; i < BOARD_ROWS; i++){
+		for (int j = 0; j < BOARD_COLS; j++){
+			if (b[i][j].value < 0 && b[i][j].fuel > 0){
+				//aka is a min piece
+				//aka is a max piece and it can move
+				int value = b[i][j].value;
 
-					if (value == KING_MIN){
-						moveKing(re, i, j);
-					}
-					else if (value == QUEEN_MIN){
-						moveKnight(re, i, j, KING_MIN);
-						moveBishop(re, i, j, KING_MIN);
-					}
-					else if (value == KNIGHT_MIN){
-						moveKnight(re, i, j, KING_MIN);
-					}
-					else if (value == BISHOP_MIN){
-						moveBishop(re, i, j, KING_MIN);
-					}
-					else {
-						//this shouldn't happen
-						cout << "THIS SHOULD NOT HAPPEN in min";
-					}
+				if (value == KING_MIN){
+					moveKing(re, count, i, j);
 				}
-
+				else if (value == QUEEN_MIN){
+					moveKnight(re, count, i, j, KING_MIN);
+					moveBishop(re, count, i, j, KING_MIN);
+				}
+				else if (value == KNIGHT_MIN){
+					moveKnight(re, count, i, j, KING_MIN);
+				}
+				else if (value == BISHOP_MIN){
+					moveBishop(re, count, i, j, KING_MIN);
+				}
+				else {
+					//this shouldn't happen
+					cout << "THIS SHOULD NOT HAPPEN in min";
+				}
 			}
+
 		}
+	}
 	
 	
 	//return re;
+	return count;
 }
 //given possible moves for the player, sees if the move they want to do is valid
-bool isMovePossibleMin(vector<Move> &moves, int from_row, int from_col, int to_row, int to_col){
-	vector<Move>::iterator itr = foundWholeMove(moves, to_row, to_col, from_row, from_col);
-	bool found = (itr != moves.end());
-	return found;
+bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int to_row, int to_col){
+	return  foundWholeMove(re, count, to_row, to_col, from_row, from_col);
+	//bool found = (itr != moves.end());
+	//return found;
 }
-void moveKing(vector<Move> &re, int i, int j){
+void moveKing(int re[][4], int &count, int i, int j){
 	//(+1, +1), (+1, 0), (+1, -1), (0, -1), (0, +1), (-1, 0), (-1, +1), (-1, -1) 
 
 	int to_row = i + 1, to_col = j + 1; //(+1, +1)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		//re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j; //to_row stays i+1 (+1, 0)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j - 1;//to_row stays i+1  (+1, -1)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_row = i; //to_col stays i-1  (0, -1)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j + 1; //(0, +1)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_row = i - 1; //(-1, +1)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j; //(-1, 0)
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j - 1; // (-1, -1) 
 	if (moveInBounds(to_row, to_col)){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 }
-void moveKnight(vector<Move> &re, int i, int j, int kingVal){
+void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 	//(+2, +1), (+2, -1), (-2, +1), (-2, -1), (+1, +2), (+1, -2), (-1, +2), (-1, -2) 
 	//can't kill own king
 	int to_row = i + 2, to_col = j + 1; //(+2, +1)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		//re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j - 1; //(+2, -1)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_row = i - 2;//(-2, -1)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j + 1;//(-2, +1)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_row = i + 1, to_col = j + 2; //(+1, +2)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j - 2; //(+1, -2)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_row = i - 1;//(-1, -2)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 	to_col = j + 2;
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		re.push_back(Move(i, j, to_row, to_col));
+		re[count][0] = i;
+		re[count][1] = j;
+		re[count][2] = to_row;
+		re[count][3] = to_col;
+		count++;
 	}
 }
-void moveBishop(vector<Move> &re, int i, int j, int kingVal){
+void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
 	//goes 4 directions. goes until it either hits the end or captures a piece
 	//(-1, -1), (-1, +1), (+1, +1), (+1, -1)
 
@@ -597,7 +695,11 @@ void moveBishop(vector<Move> &re, int i, int j, int kingVal){
 	while (moveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col].value;
 		if (val != kingVal){
-			re.push_back(Move(i, j, to_row, to_col));
+			re[count][0] = i;
+			re[count][1] = j;
+			re[count][2] = to_row;
+			re[count][3] = to_col;
+			count++;
 		}
 		if (val != 0){
 			break;
@@ -611,7 +713,11 @@ void moveBishop(vector<Move> &re, int i, int j, int kingVal){
 	while (moveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col].value;
 		if (val != kingVal){
-			re.push_back(Move(i, j, to_row, to_col));
+			re[count][0] = i;
+			re[count][1] = j;
+			re[count][2] = to_row;
+			re[count][3] = to_col;
+			count++;
 		}
 		if (val != 0){
 			break;
@@ -626,7 +732,11 @@ void moveBishop(vector<Move> &re, int i, int j, int kingVal){
 	while (moveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col].value;
 		if (val != kingVal){
-			re.push_back(Move(i, j, to_row, to_col));
+			re[count][0] = i;
+			re[count][1] = j;
+			re[count][2] = to_row;
+			re[count][3] = to_col;
+			count++;
 		}
 		if (val != 0){
 			break;
@@ -640,7 +750,11 @@ void moveBishop(vector<Move> &re, int i, int j, int kingVal){
 	while (moveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col].value;
 		if (val != kingVal){
-			re.push_back(Move(i, j, to_row, to_col));
+			re[count][0] = i;
+			re[count][1] = j;
+			re[count][2] = to_row;
+			re[count][3] = to_col;
+			count++;
 		}
 		if (val != 0){
 			break;
@@ -699,27 +813,41 @@ void textcolor(int attr, int fg, int bg){
 
 
 /********************************************Testing code******************************************************/
-struct find_move : std::unary_function<Move, bool> {
-	int to_row, to_col;
-	find_move(int to_row, int to_col) :to_row(to_row), to_col(to_col) { }
-	bool operator()(Move const& m) const {
-		return m.to_row == to_row && m.to_col == to_col;
+//struct find_move : std::unary_function<Move, bool> {
+//	int to_row, to_col;
+//	find_move(int to_row, int to_col) :to_row(to_row), to_col(to_col) { }
+//	bool operator()(Move const& m) const {
+//		return move[2] == to_row && move[3] == to_col;
+//	}
+//};
+//struct find_whole_move : std::unary_function<Move, bool> {
+//	int to_row, to_col, from_row, from_col;
+//	find_whole_move(int to_row, int to_col, int from_row, int from_col) :to_row(to_row), to_col(to_col), from_row(from_row), from_col(from_col) { }
+//	bool operator()(Move const& m) const {
+//		return move[2] == to_row && move[3] == to_col && move[0] == from_row && move[1] == from_col;
+//	}
+//};
+//returns index
+int foundMove(int moves[][4], int count, int to_row, int to_col){
+	for (int i = 0; i < count; i++){
+		if ( moves[i][2] == to_row && moves[i][3] == to_col){
+			return i;
+		}
 	}
-};
-struct find_whole_move : std::unary_function<Move, bool> {
-	int to_row, to_col, from_row, from_col;
-	find_whole_move(int to_row, int to_col, int from_row, int from_col) :to_row(to_row), to_col(to_col), from_row(from_row), from_col(from_col) { }
-	bool operator()(Move const& m) const {
-		return m.to_row == to_row && m.to_col == to_col && m.from_row == from_row && m.from_col == from_col;
-	}
-};
-vector<Move>::iterator foundMove(vector<Move> &moves, int to_row, int to_col){
-	vector<Move>::iterator it = std::find_if(moves.begin(), moves.end(), find_move(to_row, to_col));
-	return it;
+	return -1;
 }
-vector<Move>::iterator foundWholeMove(vector<Move> &moves, int to_row, int to_col, int from_row, int from_col){
-	vector<Move>::iterator it = std::find_if(moves.begin(), moves.end(), find_whole_move(to_row, to_col, from_row, from_col));
-	return it;
+bool foundWholeMove(int moves[][4], int count, int to_row, int to_col, int from_row, int from_col){
+	//vector<Move>::iterator it = std::find_if(moves.begin(), moves.end(), find_whole_move(to_row, to_col, from_row, from_col));
+	//return it;
+
+	
+	for (int i = 0; i < count; i++){
+		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
+			return true;
+		}
+	}
+	return false;
+
 }
 void testKnight(){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
@@ -889,19 +1017,21 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 
 	printboard();
 
-	vector<Move> moves;
-	 getPossibleMovesMax(moves);
+	//vector<Move> moves;
+	int moves[53][4];
+	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
 		int to_row = values[i].first;
 		int to_col = values[i].second;
-		vector<Move>::iterator itr = foundMove(moves, to_row, to_col);
-		bool found = (itr != moves.end());
+		int index = foundMove(moves, count, to_row, to_col);
+		bool found = index != -1;
 		
 		if (found){
-			Move m = *itr;
+			//Move m = *itr;
 			//see if move/retract works
 			int pieceTaken[3];
-			makeMove(m, pieceTaken);
+			//int m[4] = moves[index];
+			makeMove(moves[index], pieceTaken);
 			bool pieceMoved = b[to_row][to_col].value == value;
 
 			bool previousCleared = b[from_row][from_col].value == 0;
@@ -912,7 +1042,7 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 				printboard();
 			}
 			
-			retractMove(m, pieceTaken);
+			retractMove(moves[index], pieceTaken);
 			bool pieceMovedBack = b[from_row][from_col].value == value;
 			bool pieceClearedBack = b[to_row][to_col].value == pieceTaken[0] && b[to_row][to_col].fuel == pieceTaken[1];
 			
@@ -927,13 +1057,16 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 			cout << getPrintValue(value) << " from [" << from_row << ", " << from_col << "] move to [" << to_row << ", " << to_col << "] =" << found << endl;
 		}
 	}
-	bool sizesMatch = (moves.size() == valuesCount);
+	bool sizesMatch = (count == valuesCount);
 	cout << "actual moves list size equals given: " << sizesMatch << endl;
 	
 	if (!sizesMatch){
-		cout << "number of moves: " << moves.size() << endl;
-		for (Move c : moves){
-			std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
+		cout << "number of moves: " << count << endl;
+		//for (Move c : moves){
+		//	std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
+		//}
+		for (int i = 0; i < count; i++){
+			cout << '[' << moves[i][0] << ',' << moves[i][1] << "], [" << moves[i][2] << ',' << moves[i][3] << ']' << endl;
 		}
 	}
 
@@ -945,8 +1078,10 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 	cout << "Starting positions: " << endl;
 	printboard();
-	vector<Move> moves;
-	getPossibleMovesMax(moves);
+
+	int moves[53][4];
+	//vector<Move> moves;
+	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
 		//cout << "Starting positions: " << endl;
 		//printboard();
@@ -957,12 +1092,13 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 		
 		int value = b[from_row][from_col].value;
 		//char printValue = b[from_row][from_col].printValue;
-		vector<Move>::iterator itr = foundWholeMove(moves, to_row, to_col, from_row, from_col);
-		bool found = (itr != moves.end());
+		bool found  = foundWholeMove(moves, count, to_row, to_col, from_row, from_col);
+		//bool found = (itr != moves.end());
 
 		if (found){
 			//cout << printValue << " from [" << from_row << ", " << from_col << "] move to [" << to_row << ", " << to_col << "] =" << found << endl;
-			Move m = *itr;
+			//Move m = *itr;
+			int m[4] = { from_row, from_col, to_row, to_col };
 			//see if move/retract works
 			int pieceTaken[3];
 			makeMove(m, pieceTaken);
@@ -991,13 +1127,16 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 			cout << getPrintValue(value) << " from [" << from_row << ", " << from_col << "] move to [" << to_row << ", " << to_col << "] =" << found << endl;
 		}
 	}
-	bool sizesMatch = (moves.size() == valuesCount);
+	bool sizesMatch = (count == valuesCount);
 	cout << "actual moves list size equals given: " << sizesMatch << endl;
 
 	if (!sizesMatch){
-		cout << "number of moves: " << moves.size() << endl;
-		for (Move c : moves){
-			std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
+		cout << "number of moves: " << count << endl;
+		//for (Move c : moves){
+		//	std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
+		//}
+		for (int i = 0; i < count; i++){
+			cout << '[' << moves[i][0] << ',' << moves[i][1] << "], [" << moves[i][2] << ',' << moves[i][3] << ']' << endl;
 		}
 	}
 }
