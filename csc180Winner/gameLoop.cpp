@@ -79,7 +79,7 @@ const char BISHOP_MIN_C = 'b';
 
 
 const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_C, '-', BISHOP_MAX_C, KNIGHT_MAX_C, QUEEN_MAX_C, KING_MAX_C };
-
+//piece evalution values
 const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
 //minimax stuff
 const int BEST_MAX =  9000000;
@@ -131,7 +131,6 @@ int main(){
 			printboard();
 		}
 	}
-	
 }
 int evaluate(){//stub for now
 	//evalCount++;
@@ -224,7 +223,6 @@ void computeMinimax(){
 int min(int depth, int maxFoundSoFar){
 	
 	int moves[53][4];
-	//moves.reserve(20);
 	int count = getPossibleMovesMin(moves);
 	if (count == 0){
 		//human can't move, so I win
@@ -266,7 +264,6 @@ int min(int depth, int maxFoundSoFar){
 int max(int depth, int minFoundSoFar){
 	
 	int moves[53][4];
-	//moves.reserve(20);
 	int count = getPossibleMovesMax(moves);
 	if (count == 0){
 		//I can't move, so human wins
@@ -353,15 +350,13 @@ void gameOver(bool maxPlayerOne){
 	}
 	//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 	char anyChar;
-	cout << "Press any key to end";
+	cout << "Press any key + enter to end";
 	cin >> anyChar;
-
 	exit(0);
 }
 //gets, validates and makes the players move
 void getPlayerMove(){
 	
-	//vector<Move> moves;
 	int moves[53][4];
 	int count = getPossibleMovesMin(moves);
 	if (count == 0){
@@ -393,7 +388,6 @@ void getPlayerMove(){
 			cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		}
 
-		//Move m = Move(from_row_act, from_col_act, to_row_act, to_col_act);
 		int m[4] = { from_row_act, from_col_act, to_row_act, to_col_act };
 		int pieceTaken[3];
 		makeMove(m, pieceTaken);
@@ -972,7 +966,6 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 		bool found = index != -1;
 		
 		if (found){
-			//Move m = *itr;
 			//see if move/retract works
 			int pieceTaken[3];
 			//int m[4] = moves[index];
