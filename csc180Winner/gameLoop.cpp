@@ -7,41 +7,18 @@
 using namespace std;
 
 
-struct Piece {
-	//bool maxPiece;
-	
+struct Piece {	
 	int value;
-	//char printValue;
 	int fuel;
 	Piece(){
 		value = 0;
 		fuel = 3;
-		//printValue = '-';
 	}
 	Piece(int init_value){
 		value = init_value;
-		//printValue = init_printValue;
 		fuel = 3;
 	}
 };
-//struct Move {
-//	int from_row;
-//	int from_col;
-//	int to_row;
-//	int to_col;
-//
-//	//int from_fuel;
-//	//Piece piece_taken;
-//	Move(){
-//
-//	}
-//	Move(int from_row_i, int from_col_i, int to_row_i, int to_col_i){
-//		from_row = from_row_i;
-//		from_col = from_col_i;
-//		to_row = to_row_i;
-//		to_col = to_col_i;
-//	}
-//};
 void computeMinimax();
 int min(int depth, int maxFoundSoFar);
 int max(int depth, int minFoundSoFar);
@@ -986,7 +963,6 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 
 	printboard();
 
-	//vector<Move> moves;
 	int moves[53][4];
 	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
