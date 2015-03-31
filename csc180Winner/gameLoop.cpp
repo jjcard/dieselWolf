@@ -118,11 +118,13 @@ const char BISHOP_MIN_C = 'b';
 
 
 const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_C, '-', BISHOP_MAX_C, KNIGHT_MAX_C, QUEEN_MAX_C, KING_MAX_C };
+
+const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
 //minimax stuff
-const int BEST_MAX = 200000;
-const int BEST_MIN = -200000;
-const int WIN_MAX = 100000;
-const int WIN_MIN = -100000;
+const int BEST_MAX =  9000000;
+const int BEST_MIN = -9000000;
+const int WIN_MAX =   2000000;
+const int WIN_MIN =  -2000000;
 
 const bool test = false;
 //so index is [row, col] 
@@ -181,7 +183,7 @@ int evaluate(){//stub for now
 			curVal = b[i][j].value;
 			if (curVal != 0){
 				//an actual piece
-				eval += curVal * b[i][j].fuel;
+				eval += evalValues[curVal + 4] * b[i][j].fuel;
 			}
 		}
 	}
@@ -208,6 +210,9 @@ void computeMinimax(){
 		gameOver(false);
 	}
 	else {
+		if (count > 53){
+			cout << "OH NO, IT SHOULDN'T BE THIS LONG" << endl;
+		}
 		//if (moves.size() > minimaxMoveCount){
 		//	minimaxMoveCount = moves.size();
 		//}
@@ -264,6 +269,9 @@ int min(int depth, int maxFoundSoFar){
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
+	if (count > 53){
+		cout << "OH NO, IT SHOULDN't BE THIS LONG" << endl;
+	}
 	//if (moves.size() > minMoveCount){
 	//	minMoveCount = moves.size();
 	//}
@@ -302,6 +310,9 @@ int max(int depth, int minFoundSoFar){
 	if (count == 0){
 		//I can't move, so human wins
 		return WIN_MIN + depth;
+	}
+	if (count > 53){
+		cout << "OH NO, IT SHOULDN't BE THIS LONG" << endl;
 	}
 	//if (moves.size() > maxMoveCount){
 	//	maxMoveCount = moves.size();
@@ -379,7 +390,7 @@ void gameOver(bool maxPlayerOne){
 	else {
 		cout << "You won" << endl;
 	}
-	cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
+	//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 	char anyChar;
 	cout << "Press any key to end";
 	cin >> anyChar;
@@ -769,6 +780,7 @@ bool moveInBounds(int to_row, int to_col){
 	return to_col >= 0 && to_col < BOARD_COLS && to_row >= 0 && to_row < BOARD_ROWS;
 }
 void printboard(){
+	//example
 	//  7  -- --B3 Q3 K3 B3 N3 --  computer
 	//	6  -- -- -- -- -- -- -- --
 	//	5  -- --N2-- -- -- -- --
@@ -789,9 +801,7 @@ void printboard(){
 			else {
 				cout << printValues[b[i][j].value + 4] << b[i][j].fuel << ' ';
 			}
-			
 		}
-
 		cout << endl;
 	}		
 	cout << "--------------------------" << endl;
@@ -813,21 +823,6 @@ void textcolor(int attr, int fg, int bg){
 
 
 /********************************************Testing code******************************************************/
-//struct find_move : std::unary_function<Move, bool> {
-//	int to_row, to_col;
-//	find_move(int to_row, int to_col) :to_row(to_row), to_col(to_col) { }
-//	bool operator()(Move const& m) const {
-//		return move[2] == to_row && move[3] == to_col;
-//	}
-//};
-//struct find_whole_move : std::unary_function<Move, bool> {
-//	int to_row, to_col, from_row, from_col;
-//	find_whole_move(int to_row, int to_col, int from_row, int from_col) :to_row(to_row), to_col(to_col), from_row(from_row), from_col(from_col) { }
-//	bool operator()(Move const& m) const {
-//		return move[2] == to_row && move[3] == to_col && move[0] == from_row && move[1] == from_col;
-//	}
-//};
-//returns index
 int foundMove(int moves[][4], int count, int to_row, int to_col){
 	for (int i = 0; i < count; i++){
 		if ( moves[i][2] == to_row && moves[i][3] == to_col){
@@ -837,10 +832,6 @@ int foundMove(int moves[][4], int count, int to_row, int to_col){
 	return -1;
 }
 bool foundWholeMove(int moves[][4], int count, int to_row, int to_col, int from_row, int from_col){
-	//vector<Move>::iterator it = std::find_if(moves.begin(), moves.end(), find_whole_move(to_row, to_col, from_row, from_col));
-	//return it;
-
-	
 	for (int i = 0; i < count; i++){
 		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
 			return true;
@@ -1062,9 +1053,6 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 	
 	if (!sizesMatch){
 		cout << "number of moves: " << count << endl;
-		//for (Move c : moves){
-		//	std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
-		//}
 		for (int i = 0; i < count; i++){
 			cout << '[' << moves[i][0] << ',' << moves[i][1] << "], [" << moves[i][2] << ',' << moves[i][3] << ']' << endl;
 		}
@@ -1080,7 +1068,6 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 	printboard();
 
 	int moves[53][4];
-	//vector<Move> moves;
 	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
 		//cout << "Starting positions: " << endl;
@@ -1091,13 +1078,10 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 		int to_col = values[i].second.second;
 		
 		int value = b[from_row][from_col].value;
-		//char printValue = b[from_row][from_col].printValue;
 		bool found  = foundWholeMove(moves, count, to_row, to_col, from_row, from_col);
-		//bool found = (itr != moves.end());
 
 		if (found){
 			//cout << printValue << " from [" << from_row << ", " << from_col << "] move to [" << to_row << ", " << to_col << "] =" << found << endl;
-			//Move m = *itr;
 			int m[4] = { from_row, from_col, to_row, to_col };
 			//see if move/retract works
 			int pieceTaken[3];
@@ -1132,9 +1116,6 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 
 	if (!sizesMatch){
 		cout << "number of moves: " << count << endl;
-		//for (Move c : moves){
-		//	std::cout << '[' << c.from_row << ',' << c.from_col << "], [" << c.to_row << ',' << c.to_col << ']' << endl;
-		//}
 		for (int i = 0; i < count; i++){
 			cout << '[' << moves[i][0] << ',' << moves[i][1] << "], [" << moves[i][2] << ',' << moves[i][3] << ']' << endl;
 		}
