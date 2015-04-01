@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
-#include <algorithm>
 #include <ctime>
 using namespace std;
 
@@ -87,7 +86,7 @@ const int BEST_MIN = -9000000;
 const int WIN_MAX =   2000000;
 const int WIN_MIN =  -2000000;
 
-const bool test = false;
+const bool test = true;
 //so index is [row, col] 
 //[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 //[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
@@ -112,9 +111,7 @@ int main(){
 		testBishop();
 		testQueen();
 		testPostSetUp();
-		//getPlayerMove(); //to pause the screen
 		gameOver(true);
-		
 	}
 	else {
 		setup();
@@ -132,7 +129,7 @@ int main(){
 		}
 	}
 }
-int evaluate(){//stub for now
+int evaluate(){
 	//evalCount++;
 	//cout << "Evaluate has been called " << evalCount <<" times" << endl;
 	int eval = 0;

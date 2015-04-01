@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gameLoop.cpp" />
+    <ClCompile Include="DieselWolf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Text.txt" />
