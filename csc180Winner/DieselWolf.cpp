@@ -1,4 +1,5 @@
-
+//Program Name: Diesel Wolf
+//Author: John Hill
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -80,13 +81,15 @@ const char BISHOP_MIN_C = 'b';
 const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_C, '-', BISHOP_MAX_C, KNIGHT_MAX_C, QUEEN_MAX_C, KING_MAX_C };
 //piece evalution values
 const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
+//fuel evalution values - want pieces to be able to move, so less then piece evalution values
+const int evalFuelValues[9] = {-999, -800, -290, -310, 0, 310, 290, 800, 999 };
 //minimax stuff
 const int BEST_MAX =  9000000;
 const int BEST_MIN = -9000000;
 const int WIN_MAX =   2000000;
 const int WIN_MIN =  -2000000;
 
-const bool test = true;
+const bool test = false;
 //so index is [row, col] 
 //[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 //[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
@@ -95,7 +98,6 @@ const bool test = true;
 //[2, 0] [2, 1] [2, 2] [2, 3] [2, 4] [2, 5] [2, 6] [2, 7]
 //[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
-//Piece b[BOARD_ROWS][BOARD_COLS] = { {}, {}, {}, {}, {}, {}, {}, {} };
 Piece b[BOARD_ROWS][BOARD_COLS];
 const int maxDepth = 5;
 int evalCount = 0;
@@ -140,7 +142,7 @@ int evaluate(){
 			curVal = b[i][j].value;
 			if (curVal != 0){
 				//an actual piece
-				eval += evalValues[curVal + 4] * b[i][j].fuel;
+				eval += evalValues[curVal + 4] + evalFuelValues[curVal + 4] * b[i][j].fuel;
 			}
 		}
 	}
@@ -184,7 +186,6 @@ void computeMinimax(){
 			}
 			else {
 				curScore = min(2, bestScore);
-
 			}
 			if (curScore > bestScore){
 				bestScore = curScore;
@@ -213,9 +214,7 @@ void computeMinimax(){
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
 		}
-
 	}
-
 }
 int min(int depth, int maxFoundSoFar){
 	
@@ -309,30 +308,19 @@ void setup(){
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 
-
 	b[5][3].value = KNIGHT_MAX;
-
 	b[6][2].value = BISHOP_MAX;
-
 	b[6][3].value = QUEEN_MAX;
-
 	b[6][4].value = KING_MAX;
-
 	b[6][5].value = BISHOP_MAX;
-
 	b[5][5].value = KNIGHT_MAX;
 
 	//min values
 	b[1][3].value = KNIGHT_MIN;
-
 	b[0][2].value = BISHOP_MIN;
-
 	b[0][3].value = QUEEN_MIN;
-
 	b[0][4].value = KING_MIN;
-
 	b[0][5].value = BISHOP_MIN;
-
 	b[1][5].value = KNIGHT_MIN;
 }
 
@@ -340,10 +328,10 @@ void setup(){
 void gameOver(bool maxPlayerOne){
 	printboard();
 	if (maxPlayerOne){
-		cout << "I won" << endl;
+		cout << "I won!" << endl;
 	}
 	else {
-		cout << "You won" << endl;
+		cout << "You won!" << endl;
 	}
 	//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 	char anyChar;
@@ -399,11 +387,9 @@ void getPlayerMove(){
 void makeMove(int move[], int pieceTaken[]){
 	//stub for now
 	Piece p = b[move[0]][move[1]];
-	//m.piece_taken = b[move[2]][move[3]];
 	pieceTaken[0] = b[move[2]][move[3]].value;
 	pieceTaken[1] = b[move[2]][move[3]].fuel;
 	b[move[0]][move[1]].value = 0;
-	//b[move[0]][move[1]].printValue = '-';
 	pieceTaken[2] = p.fuel;
 	if (pieceTaken[0] != 0){
 		//aka an actual piece
@@ -437,7 +423,6 @@ int getPossibleMovesMax(int re[][4]){
 	//[2, 0] [2, 1] [2, 2] [2, 3] [2, 4] [2, 5] [2, 6] [2, 7]
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
-	//vector<Move> re;
 
 	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
@@ -464,7 +449,6 @@ int getPossibleMovesMax(int re[][4]){
 					cout << "THIS SHOULD NOT HAPPEN in max";
 				}
 			}
-
 		}
 	}
 	return count;
@@ -508,15 +492,12 @@ int getPossibleMovesMin(int re[][4]){
 //given possible moves for the player, sees if the move they want to do is valid
 bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int to_row, int to_col){
 	return  foundWholeMove(re, count, to_row, to_col, from_row, from_col);
-	//bool found = (itr != moves.end());
-	//return found;
 }
 void moveKing(int re[][4], int &count, int i, int j){
 	//(+1, +1), (+1, 0), (+1, -1), (0, -1), (0, +1), (-1, 0), (-1, +1), (-1, -1) 
 
 	int to_row = i + 1, to_col = j + 1; //(+1, +1)
 	if (moveInBounds(to_row, to_col)){
-		//re.push_back(Move(i, j, to_row, to_col));
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -585,7 +566,6 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 	//can't kill own king
 	int to_row = i + 2, to_col = j + 1; //(+2, +1)
 	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
-		//re.push_back(Move(i, j, to_row, to_col));
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
