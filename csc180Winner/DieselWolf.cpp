@@ -575,8 +575,7 @@ int getPossibleMovesMin(int re[][4]){
 	for (int i = 0; i < BOARD_ROWS; i++){
 		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j].value < 0 && b[i][j].fuel > 0){
-				//aka is a min piece
-				//aka is a max piece and it can move
+				//aka is a min piece and it can move
 				int value = b[i][j].value;
 
 				if (value == KING_MIN){
