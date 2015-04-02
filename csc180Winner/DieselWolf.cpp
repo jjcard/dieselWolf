@@ -48,6 +48,7 @@ bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int t
 void gameOver(bool maxPlayerOne);
 bool isPlayerGoingFirst();
 char getPrintValue(int value);
+void sortMoves(int moves[53][4], int moveCount, int depth);
 
 
 
@@ -101,6 +102,11 @@ const bool test = false;
 Piece b[BOARD_ROWS][BOARD_COLS];
 
 const int maxDepth = 5;
+
+
+//the killer moves for the game
+const int numKillerMoves = 2;
+int killerMoves[maxDepth][numKillerMoves][4];
 int evalCount = 0;
 clock_t start;
 double duration;
@@ -210,7 +216,7 @@ void computeMinimax(){
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
-		cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
+		//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
@@ -234,7 +240,7 @@ int min(int depth, int maxFoundSoFar){
 	if (depth == maxDepth){ return evaluate();}
 	int bestScore = BEST_MAX;
 
-	
+	sortMoves(moves, count, depth);
 	int curScore;
 	int pieceTaken[3];
 	for (int i = 0; i < count; i++){
@@ -252,6 +258,21 @@ int min(int depth, int maxFoundSoFar){
 			bestScore = curScore;
 			if (bestScore <= maxFoundSoFar){
 				//alpha beta prune
+
+				//move everything down the killer move list
+				for (int j = numKillerMoves - 2; j >= 0; j--){
+					killerMoves[depth][j + 1][0] = killerMoves[depth][j][1];
+					killerMoves[depth][j + 1][1] = killerMoves[depth][j][2];
+					killerMoves[depth][j + 1][2] = killerMoves[depth][j][3];
+					killerMoves[depth][j + 1][3] = killerMoves[depth][j][4];
+				}
+				//add to killer move list
+				killerMoves[depth][0][0] = moves[i][0];
+				killerMoves[depth][0][1] = moves[i][1];
+				killerMoves[depth][0][2] = moves[i][2];
+				killerMoves[depth][0][3] = moves[i][3];
+
+
 				return bestScore;
 			}
 		}
@@ -275,7 +296,7 @@ int max(int depth, int minFoundSoFar){
 	if (depth == maxDepth){ return evaluate(); }
 	int bestScore = BEST_MIN;
 
-	
+	sortMoves(moves, count, depth);
 	int curScore;
 	int pieceTaken[3];
 	for (int i = 0; i < count; i++){
@@ -294,11 +315,106 @@ int max(int depth, int minFoundSoFar){
 			bestScore = curScore;
 			if (bestScore >= minFoundSoFar){
 				//alpha beta prune, it can only be bigger
+				//move everything down the killer move list
+				for (int j = numKillerMoves -2; j >= 0 ; j--){
+					killerMoves[depth][j + 1][0] = killerMoves[depth][j][1];
+					killerMoves[depth][j + 1][1] = killerMoves[depth][j][2];
+					killerMoves[depth][j + 1][2] = killerMoves[depth][j][3];
+					killerMoves[depth][j + 1][3] = killerMoves[depth][j][4];
+				}
+				//add to killer move list
+				killerMoves[depth][0][0] = moves[i][0];
+				killerMoves[depth][0][1] = moves[i][1];
+				killerMoves[depth][0][2] = moves[i][2];
+				killerMoves[depth][0][3] = moves[i][3];
 				return bestScore;
 			}
 		}
 	}
 	return bestScore;
+}
+void sortMoves(int moves[53][4], int moveCount, int depth){
+	//int (*killerMovesDepth)[4] = killerMoves[depth];
+	int *curMove;
+	int curSwapPosition = 0;
+	int swapTemp[4];
+	//for (int i = 0; i < moveCount; i++){
+	//	curMove = moves[i];
+	//	if (killerMoves[depth][0][0] == curMove[0] && 
+	//		killerMoves[depth][0][1] == curMove[1] && 
+	//		killerMoves[depth][0][2] == curMove[2] && 
+	//		killerMoves[depth][0][3] == curMove[3]){
+	//		//swap killer move closer to the front
+	//		swapTemp[0] = moves[curSwapPosition][0];
+	//		swapTemp[1] = moves[curSwapPosition][1];
+	//		swapTemp[2] = moves[curSwapPosition][2];
+	//		swapTemp[3] = moves[curSwapPosition][3];
+
+	//		moves[curSwapPosition][0] = curMove[0];
+	//		moves[curSwapPosition][1] = curMove[1];
+	//		moves[curSwapPosition][2] = curMove[2];
+	//		moves[curSwapPosition][3] = curMove[3];
+
+	//		moves[i][0] = swapTemp[0];
+	//		moves[i][1] = swapTemp[1];
+	//		moves[i][2] = swapTemp[2];
+	//		moves[i][3] = swapTemp[3];
+	//		curSwapPosition++;
+	//	} else
+	//	if (killerMoves[depth][1][0] == curMove[0] &&
+	//		killerMoves[depth][1][1] == curMove[1] &&
+	//		killerMoves[depth][1][2] == curMove[2] &&
+	//		killerMoves[depth][1][3] == curMove[3]){
+	//		//swap killer move closer to the front
+	//		swapTemp[0] = moves[curSwapPosition][0];
+	//		swapTemp[1] = moves[curSwapPosition][1];
+	//		swapTemp[2] = moves[curSwapPosition][2];
+	//		swapTemp[3] = moves[curSwapPosition][3];
+
+	//		moves[curSwapPosition][0] = curMove[0];
+	//		moves[curSwapPosition][1] = curMove[1];
+	//		moves[curSwapPosition][2] = curMove[2];
+	//		moves[curSwapPosition][3] = curMove[3];
+
+	//		moves[i][0] = swapTemp[0];
+	//		moves[i][1] = swapTemp[1];
+	//		moves[i][2] = swapTemp[2];
+	//		moves[i][3] = swapTemp[3];
+	//		curSwapPosition++;
+	//	}
+	//	if (curSwapPosition == 2){
+	//		break;
+	//	}
+	//}
+
+	for (int i = 0; i < numKillerMoves; i++){
+		for (int j = 0; j < moveCount; j++){
+			curMove = moves[j];
+			if (killerMoves[depth][i][0] == curMove[0] && 
+				killerMoves[depth][i][1] == curMove[1] &&
+				killerMoves[depth][i][2] == curMove[2] &&
+				killerMoves[depth][i][3] == curMove[3]){
+				//cout << "Found killer move at depth " << depth << endl;
+				//swap killer move closer to the front
+				swapTemp[0] = moves[curSwapPosition][0];
+				swapTemp[1] = moves[curSwapPosition][1];
+				swapTemp[2] = moves[curSwapPosition][2];
+				swapTemp[3] = moves[curSwapPosition][3];
+
+				moves[curSwapPosition][0] = curMove[0];
+				moves[curSwapPosition][1] = curMove[1];
+				moves[curSwapPosition][2] = curMove[2];
+				moves[curSwapPosition][3] = curMove[3];
+
+				moves[j][0] = swapTemp[0];
+				moves[j][1] = swapTemp[1];
+				moves[j][2] = swapTemp[2];
+				moves[j][3] = swapTemp[3];
+				curSwapPosition++;
+				break;
+			}
+		}
+	}
 }
 void setup(){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
