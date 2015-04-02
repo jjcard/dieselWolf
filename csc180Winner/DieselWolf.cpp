@@ -82,7 +82,7 @@ const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_
 //piece evalution values
 const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
 //fuel evalution values - want pieces to be able to move, so less then piece evalution values
-const int evalFuelValues[9] = {-999, -800, -290, -310, 0, 310, 290, 800, 999 };
+const int evalFuelValues[9] = {-899, -750, -280, -300, 0, 300, 280, 750, 899 };
 //minimax stuff
 const int BEST_MAX =  9000000;
 const int BEST_MIN = -9000000;
@@ -99,6 +99,7 @@ const bool test = false;
 //[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 Piece b[BOARD_ROWS][BOARD_COLS];
+
 const int maxDepth = 5;
 int evalCount = 0;
 clock_t start;
@@ -158,7 +159,7 @@ bool isPlayerGoingFirst(){
 }
 void computeMinimax(){
 	start = clock();
-	int bestScore = BEST_MIN;// depth = 1;
+	int bestScore = BEST_MIN;
 	evalCount = 0;
 	int *bestMove;
 
@@ -170,7 +171,7 @@ void computeMinimax(){
 	}
 	else {
 		if (count > 53){
-			cout << "OH NO, IT SHOULDN'T BE THIS LONG" << endl;
+			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax" << endl;
 		}
 		//if (moves.size() > minimaxMoveCount){
 		//	minimaxMoveCount = moves.size();
@@ -225,7 +226,7 @@ int min(int depth, int maxFoundSoFar){
 		return WIN_MAX - depth;
 	}
 	if (count > 53){
-		cout << "OH NO, IT SHOULDN't BE THIS LONG" << endl;
+		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN" << endl;
 	}
 	//if (moves.size() > minMoveCount){
 	//	minMoveCount = moves.size();
@@ -266,7 +267,7 @@ int max(int depth, int minFoundSoFar){
 		return WIN_MIN + depth;
 	}
 	if (count > 53){
-		cout << "OH NO, IT SHOULDN't BE THIS LONG" << endl;
+		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX" << endl;
 	}
 	//if (moves.size() > maxMoveCount){
 	//	maxMoveCount = moves.size();
@@ -385,7 +386,6 @@ void getPlayerMove(){
 }
 //makes the move on the board
 void makeMove(int move[], int pieceTaken[]){
-	//stub for now
 	Piece p = b[move[0]][move[1]];
 	pieceTaken[0] = b[move[2]][move[3]].value;
 	pieceTaken[1] = b[move[2]][move[3]].fuel;
@@ -739,8 +739,6 @@ void printboard(){
 	cout << "--------------------------" << endl;
 	cout << "   A  B  C  D  E  F  G  H" << endl;
 }
-
-
 
 
 
