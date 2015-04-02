@@ -477,7 +477,7 @@ void getPlayerMove(){
 		int from_col_act = from_col - 'A';
 		int to_col_act = to_col - 'A';
 
-		cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
+		//cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		while (!isMovePossibleMin(moves, count, from_row_act, from_col_act, to_row_act, to_col_act)){
 			cout << "Move not legal, please enter another move: ";
 			cin >> from_col >> from_row >> to_col >> to_row;
@@ -487,7 +487,7 @@ void getPlayerMove(){
 			from_col_act = from_col - 'A';
 			to_col_act = to_col - 'A';
 
-			cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
+			//cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		}
 
 		int m[4] = { from_row_act, from_col_act, to_row_act, to_col_act };
@@ -599,10 +599,7 @@ int getPossibleMovesMin(int re[][4]){
 			}
 
 		}
-	}
-	
-	
-	//return re;
+	}	
 	return count;
 }
 //given possible moves for the player, sees if the move they want to do is valid
