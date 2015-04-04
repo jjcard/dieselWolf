@@ -7,18 +7,18 @@
 using namespace std;
 
 
-struct Piece {	
-	int value;
-	int fuel;
-	Piece(){
-		value = 0;
-		fuel = 3;
-	}
-	Piece(int init_value){
-		value = init_value;
-		fuel = 3;
-	}
-};
+//struct Piece {	
+//	int value;
+//	int fuel;
+//	Piece(){
+//		value = 0;
+//		fuel = 3;
+//	}
+//	Piece(int init_value){
+//		value = init_value;
+//		fuel = 3;
+//	}
+//};
 void computeMinimax();
 int min(int depth, int maxFoundSoFar);
 int max(int depth, int minFoundSoFar);
@@ -98,7 +98,7 @@ const bool test = false;
 //[2, 0] [2, 1] [2, 2] [2, 3] [2, 4] [2, 5] [2, 6] [2, 7]
 //[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
-Piece b[BOARD_ROWS][BOARD_COLS];
+int b[BOARD_ROWS][BOARD_COLS][2];
 
 const int maxDepth = 5;
 int evalCount = 0;
@@ -140,10 +140,10 @@ int evaluate(){
 	//int curFuel;
 	for (int i = BOARD_ROWS - 1; i >= 0; i--){
 		for (int j = 0; j < BOARD_COLS; j++){
-			curVal = b[i][j].value;
+			curVal = b[i][j][0];
 			if (curVal != 0){
 				//an actual piece
-				eval += evalValues[curVal + 4] + evalFuelValues[curVal + 4] * b[i][j].fuel;
+				eval += evalValues[curVal + 4] + evalFuelValues[curVal + 4] * b[i][j][1];
 			}
 		}
 	}
@@ -309,20 +309,41 @@ void setup(){
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 
-	b[5][3].value = KNIGHT_MAX;
-	b[6][2].value = BISHOP_MAX;
-	b[6][3].value = QUEEN_MAX;
-	b[6][4].value = KING_MAX;
-	b[6][5].value = BISHOP_MAX;
-	b[5][5].value = KNIGHT_MAX;
+	b[5][3][0] = KNIGHT_MAX;
+	b[5][3][1] = GAS_MAX;
 
+	b[6][2][0] = BISHOP_MAX;
+	b[6][2][1] = GAS_MAX;
+
+	b[6][3][0] = QUEEN_MAX;
+	b[6][3][1] = GAS_MAX;
+
+	b[6][4][0] = KING_MAX;
+	b[6][4][1] = GAS_MAX;
+
+	b[6][5][0] = BISHOP_MAX;
+	b[6][5][1] = GAS_MAX;
+
+	b[5][5][0] = KNIGHT_MAX;
+	b[5][5][1] = GAS_MAX;
 	//min values
-	b[1][3].value = KNIGHT_MIN;
-	b[0][2].value = BISHOP_MIN;
-	b[0][3].value = QUEEN_MIN;
-	b[0][4].value = KING_MIN;
-	b[0][5].value = BISHOP_MIN;
-	b[1][5].value = KNIGHT_MIN;
+	b[1][3][0] = KNIGHT_MIN;
+	b[1][3][1] = GAS_MAX;
+
+	b[0][2][0] = BISHOP_MIN;
+	b[0][2][1] = GAS_MAX;
+
+	b[0][3][0] = QUEEN_MIN;
+	b[0][3][1] = GAS_MAX;
+
+	b[0][4][0] = KING_MIN;
+	b[0][4][1] = GAS_MAX;
+
+	b[0][5][0] = BISHOP_MIN;
+	b[0][5][1] = GAS_MAX;
+
+	b[1][5][0] = KNIGHT_MIN;
+	b[1][5][1] = GAS_MAX;
 }
 
 //ends the game. true if I won, false if player won
@@ -386,19 +407,21 @@ void getPlayerMove(){
 }
 //makes the move on the board
 void makeMove(int move[], int pieceTaken[]){
-	Piece p = b[move[0]][move[1]];
-	pieceTaken[0] = b[move[2]][move[3]].value;
-	pieceTaken[1] = b[move[2]][move[3]].fuel;
-	b[move[0]][move[1]].value = 0;
-	pieceTaken[2] = p.fuel;
+	int pVal = b[move[0]][move[1]][0];
+	int pFuel = b[move[0]][move[1]][1];
+	pieceTaken[0] = b[move[2]][move[3]][0];
+	pieceTaken[1] = b[move[2]][move[3]][1];
+	b[move[0]][move[1]][0] = 0;
+	pieceTaken[2] = pFuel;
 	if (pieceTaken[0] != 0){
 		//aka an actual piece
-		p.fuel = 3;
+		pFuel = 3;
 	}
 	else {
-		p.fuel--;
+		pFuel--;
 	}
-	b[move[2]][move[3]] = p;
+	b[move[2]][move[3]][0] = pVal;
+	b[move[2]][move[3]][1] = pFuel;
 }
 void retractMove(int move[], int pieceTaken[]){
 	
@@ -409,11 +432,13 @@ void retractMove(int move[], int pieceTaken[]){
 	//move[1] == from_col
 	//move[2] == to_row
 	//move[3] == to_col
-	Piece p = b[move[2]][move[3]];
-	p.fuel = pieceTaken[2];
-	b[move[0]][move[1]] = p;
-	b[move[2]][move[3]].value = pieceTaken[0];
-	b[move[2]][move[3]].fuel = pieceTaken[1];
+	int pVal = b[move[2]][move[3]][0];
+	int pFuel = pieceTaken[2];
+
+	b[move[0]][move[1]][0] = pVal;
+	b[move[0]][move[1]][1] = pFuel;
+	b[move[2]][move[3]][0] = pieceTaken[0];
+	b[move[2]][move[3]][1] = pieceTaken[1];
 }
 int getPossibleMovesMax(int re[][4]){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
@@ -427,9 +452,9 @@ int getPossibleMovesMax(int re[][4]){
 	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
 		for (int j = 0; j < BOARD_COLS; j++){
-			if (b[i][j].value > 0 && b[i][j].fuel > 0){
+			if (b[i][j][0] > 0 && b[i][j][1] > 0){
 				//aka is a max piece and it can move
-				int value = b[i][j].value;
+				int value = b[i][j][0];
 
 				if (value == KING_MAX){
 					moveKing(re, count, i, j);
@@ -458,10 +483,10 @@ int getPossibleMovesMin(int re[][4]){
 	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
 		for (int j = 0; j < BOARD_COLS; j++){
-			if (b[i][j].value < 0 && b[i][j].fuel > 0){
+			if (b[i][j][0] < 0 && b[i][j][1] > 0){
 				//aka is a min piece
 				//aka is a max piece and it can move
-				int value = b[i][j].value;
+				int value = b[i][j][0];
 
 				if (value == KING_MIN){
 					moveKing(re, count, i, j);
@@ -565,7 +590,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 	//(+2, +1), (+2, -1), (-2, +1), (-2, -1), (+1, +2), (+1, -2), (-1, +2), (-1, -2) 
 	//can't kill own king
 	int to_row = i + 2, to_col = j + 1; //(+2, +1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -573,7 +598,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j - 1; //(+2, -1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -581,7 +606,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i - 2;//(-2, -1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -589,7 +614,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j + 1;//(-2, +1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -597,7 +622,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i + 1, to_col = j + 2; //(+1, +2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -605,7 +630,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j - 2; //(+1, -2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -613,7 +638,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i - 1;//(-1, -2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -621,7 +646,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j + 2;
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col].value != kingVal){
+	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -636,7 +661,7 @@ void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
 
 	int to_row = i - 1, to_col = j - 1;//(-1, -1)
 	while (moveInBounds(to_row, to_col)){
-		int val = b[to_row][to_col].value;
+		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
 			re[count][1] = j;
@@ -654,7 +679,7 @@ void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
 	}
 	to_row = i - 1, to_col = j + 1;//(-1, +1)
 	while (moveInBounds(to_row, to_col)){
-		int val = b[to_row][to_col].value;
+		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
 			re[count][1] = j;
@@ -673,7 +698,7 @@ void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
 
 	 to_row = i + 1, to_col = j + 1;//(+1, +1)
 	while (moveInBounds(to_row, to_col)){
-		int val = b[to_row][to_col].value;
+		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
 			re[count][1] = j;
@@ -691,7 +716,7 @@ void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
 	}
 	 to_row = i + 1, to_col = j - 1;//(+1, -1)
 	while (moveInBounds(to_row, to_col)){
-		int val = b[to_row][to_col].value;
+		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
 			re[count][1] = j;
@@ -726,12 +751,12 @@ void printboard(){
 	for (int i = BOARD_ROWS -1; i >= 0; i--){
 		cout << (i+1) << "  ";
 		for (int j = 0; j < BOARD_COLS; j++){
-			if (b[i][j].value == 0){
+			if (b[i][j][0] == 0){
 				//empty square
 				cout << '-' << '-' << ' ';
 			}
 			else {
-				cout << printValues[b[i][j].value + 4] << b[i][j].fuel << ' ';
+				cout << printValues[b[i][j][0] + 4] << b[i][j][1] << ' ';
 			}
 		}
 		cout << endl;
@@ -774,11 +799,11 @@ void testKnight(){
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 
 
-	b[1][1].value = KING_MAX;
-	b[1][1].fuel = 0;
+	b[1][1][0] = KING_MAX;
+	b[1][1][1] = 0;
 
-	b[1][3].value = KING_MIN;
-	b[1][3].fuel = 1;
+	b[1][3][0] = KING_MIN;
+	b[1][3][1] = 1;
 	pair<int, int> values[7] = { { 5, 3 }, { 5, 1 }, { 2, 0 }, { 4, 0 }, { 4, 4 }, { 2, 4 }, {1, 3} };
 	testMove(3, 2, KNIGHT_MAX, 7, values);
 
@@ -813,11 +838,11 @@ void testBishop(){
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 
-	b[4][2].value = KING_MAX;
-	b[4][2].fuel = 0;
+	b[4][2][0] = KING_MAX;
+	b[4][2][1] = 0;
 
-	b[5][5].value = KING_MIN;
-	b[5][5].fuel = 1;
+	b[5][5][0] = KING_MIN;
+	b[5][5][1] = 1;
 	pair<int, int> values[8] = { { 2, 2 }, { 1, 1 }, { 0, 0 }, { 2, 4 }, { 1, 5 }, { 0, 6 }, { 4, 4 }, {5, 5} };
 	testMove(3, 3, BISHOP_MAX, 8, values);
 
@@ -840,13 +865,13 @@ void testQueen(){
 	//[2, 0] [2, 1] [2, 2] [2, 3] [2, 4] [2, 5] [2, 6] [2, 7]
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
-	b[4][2].value = KING_MAX;
+	b[4][2][0] = KING_MAX;
 	//b[4][2].printValue = KING_MAX_C;
-	b[4][2].fuel = 0;
+	b[4][2][1] = 0;
 
-	b[5][5].value = KING_MIN;
+	b[5][5][0] = KING_MIN;
 	//b[5][5].printValue = KING_MIN_C;
-	b[5][5].fuel = 1;
+	b[5][5][1] = 1;
 
 	pair<int, int> values[16] = { { 2, 2 }, { 1, 1 }, { 0, 0 }, { 2, 4 }, { 1, 5 }, { 0, 6 }, { 4, 4 }, { 5, 5 }, { 5, 2 }, { 5, 4 }, { 4, 5 }, { 2, 5 }, { 1, 4 }, { 1, 2 }, { 2, 1 }, { 4, 1} };
 	testMove(3, 3, QUEEN_MAX, 16, values);
@@ -855,9 +880,9 @@ void testQueen(){
 	clearPosition(5, 5);
 
 	//testing init position of queen
-	b[6][4].value = KING_MAX;
+	b[6][4][0] = KING_MAX;
 	//b[6][4].printValue = KING_MAX_C;
-	b[6][4].fuel = 0;
+	b[6][4][1] = 0;
 	pair<int, int> values2[11] = { { 5, 1 }, { 4, 2 }, { 4, 4 }, { 5, 5 }, { 5, 2 }, { 4, 1 }, { 3, 0 }, { 5, 4 }, { 4, 5 }, { 3, 6 }, {2, 7} };
 	testMove(6, 3, QUEEN_MAX, 11, values2);
 	clearPosition(6, 4);
@@ -923,12 +948,12 @@ void testPostSetUp(){
 	testMove(38, values);
 }
 void clearPosition(int row, int col){
-	b[row][col].value = 0;
-	b[row][col].fuel = 3;
+	b[row][col][0] = 0;
+	b[row][col][1] = 3;
 }
 void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, int> values[]){
-	b[from_row][from_col].value = value;
-	b[from_row][from_col].fuel = 3;
+	b[from_row][from_col][0] = value;
+	b[from_row][from_col][1] = 3;
 
 	printboard();
 
@@ -945,9 +970,9 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 			int pieceTaken[3];
 			//int m[4] = moves[index];
 			makeMove(moves[index], pieceTaken);
-			bool pieceMoved = b[to_row][to_col].value == value;
+			bool pieceMoved = b[to_row][to_col][0] == value;
 
-			bool previousCleared = b[from_row][from_col].value == 0;
+			bool previousCleared = b[from_row][from_col][0] == 0;
 			
 			if (!(pieceMoved && previousCleared)){
 				cout << "	Piece in proper place: " << pieceMoved << " and cleared properly: " << previousCleared << endl;
@@ -956,8 +981,8 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 			}
 			
 			retractMove(moves[index], pieceTaken);
-			bool pieceMovedBack = b[from_row][from_col].value == value;
-			bool pieceClearedBack = b[to_row][to_col].value == pieceTaken[0] && b[to_row][to_col].fuel == pieceTaken[1];
+			bool pieceMovedBack = b[from_row][from_col][0] == value;
+			bool pieceClearedBack = b[to_row][to_col][0] == pieceTaken[0] && b[to_row][to_col][1] == pieceTaken[1];
 			
 			if (!(pieceClearedBack && pieceMovedBack)){
 				cout << "	Piece moved back proper: " << pieceMovedBack << " and old piece replaced " << pieceClearedBack << endl;
@@ -999,7 +1024,7 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 		int to_row = values[i].second.first;
 		int to_col = values[i].second.second;
 		
-		int value = b[from_row][from_col].value;
+		int value = b[from_row][from_col][0];
 		bool found  = foundWholeMove(moves, count, to_row, to_col, from_row, from_col);
 
 		if (found){
@@ -1008,9 +1033,9 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 			//see if move/retract works
 			int pieceTaken[3];
 			makeMove(m, pieceTaken);
-			bool pieceMoved = b[to_row][to_col].value == value;
+			bool pieceMoved = b[to_row][to_col][0] == value;
 
-			bool previousCleared = b[from_row][from_col].value == 0;
+			bool previousCleared = b[from_row][from_col][0] == 0;
 
 			if (!(pieceMoved && previousCleared)){
 				cout << "	Piece in proper place: " << pieceMoved << " and cleared properly: " << previousCleared << endl;
@@ -1019,8 +1044,8 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 			}
 
 			retractMove(m, pieceTaken);
-			bool pieceMovedBack = b[from_row][from_col].value == value;
-			bool pieceClearedBack = b[to_row][to_col].value == pieceTaken[0] && b[to_row][to_col].fuel == pieceTaken[1];
+			bool pieceMovedBack = b[from_row][from_col][0] == value;
+			bool pieceClearedBack = b[to_row][to_col][0] == pieceTaken[0] && b[to_row][to_col][1] == pieceTaken[1];
 
 			if (!(pieceClearedBack && pieceMovedBack)){
 				cout << "	Piece moved back proper: " << pieceMovedBack << " and old piece replaced " << pieceClearedBack << endl;
