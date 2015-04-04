@@ -98,9 +98,6 @@ int killerMoves[maxDepth][numKillerMoves][4];
 int evalCount = 0;
 clock_t start;
 double duration;
-//unsigned int minimaxMoveCount = 0;
-//unsigned int maxMoveCount = 0;
-//unsigned int minMoveCount = 0;
 int main(){
 	if (test){
 		testKnight();
@@ -158,7 +155,6 @@ void computeMinimax(){
 	int *bestMove;
 
 	int moves[100][4] ;
-	//moves.reserve(38);
 	int count = getPossibleMovesMax(moves);
 	if (count == 0){
 		gameOver(false);
@@ -168,12 +164,9 @@ void computeMinimax(){
 			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax: " << count << endl;
 		}
 		bestMove = moves[0];
-		//if (moves.size() > minimaxMoveCount){
-		//	minimaxMoveCount = moves.size();
-		//}
+
 		int curScore;
 		int pieceTaken[3];
-		//for (Move m : moves){
 		for (int i = 0; i < count; i++){
 			makeMove(moves[i], pieceTaken);
 			if (pieceTaken[0] == KING_MIN){
@@ -205,7 +198,6 @@ void computeMinimax(){
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
-		//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
@@ -233,9 +225,6 @@ int min(int depth, int maxFoundSoFar){
 	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN: " << count << endl;
 	}
-	//if (moves.size() > minMoveCount){
-	//	minMoveCount = moves.size();
-	//}
 	if (depth == maxDepth){ return evaluate();}
 	int bestScore = BEST_MAX;
 
@@ -289,9 +278,6 @@ int max(int depth, int minFoundSoFar){
 	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX: " << count << endl;
 	}
-	//if (moves.size() > maxMoveCount){
-	//	maxMoveCount = moves.size();
-	//}
 	if (depth == maxDepth){ return evaluate(); }
 	int bestScore = BEST_MIN;
 
@@ -337,54 +323,6 @@ void sortMoves(int moves[100][4], int moveCount, int depth){
 	int *curMove;
 	int curSwapPosition = 0;
 	int swapTemp[4];
-	//for (int i = 0; i < moveCount; i++){
-	//	curMove = moves[i];
-	//	if (killerMoves[depth][0][0] == curMove[0] && 
-	//		killerMoves[depth][0][1] == curMove[1] && 
-	//		killerMoves[depth][0][2] == curMove[2] && 
-	//		killerMoves[depth][0][3] == curMove[3]){
-	//		//swap killer move closer to the front
-	//		swapTemp[0] = moves[curSwapPosition][0];
-	//		swapTemp[1] = moves[curSwapPosition][1];
-	//		swapTemp[2] = moves[curSwapPosition][2];
-	//		swapTemp[3] = moves[curSwapPosition][3];
-
-	//		moves[curSwapPosition][0] = curMove[0];
-	//		moves[curSwapPosition][1] = curMove[1];
-	//		moves[curSwapPosition][2] = curMove[2];
-	//		moves[curSwapPosition][3] = curMove[3];
-
-	//		moves[i][0] = swapTemp[0];
-	//		moves[i][1] = swapTemp[1];
-	//		moves[i][2] = swapTemp[2];
-	//		moves[i][3] = swapTemp[3];
-	//		curSwapPosition++;
-	//	} else
-	//	if (killerMoves[depth][1][0] == curMove[0] &&
-	//		killerMoves[depth][1][1] == curMove[1] &&
-	//		killerMoves[depth][1][2] == curMove[2] &&
-	//		killerMoves[depth][1][3] == curMove[3]){
-	//		//swap killer move closer to the front
-	//		swapTemp[0] = moves[curSwapPosition][0];
-	//		swapTemp[1] = moves[curSwapPosition][1];
-	//		swapTemp[2] = moves[curSwapPosition][2];
-	//		swapTemp[3] = moves[curSwapPosition][3];
-
-	//		moves[curSwapPosition][0] = curMove[0];
-	//		moves[curSwapPosition][1] = curMove[1];
-	//		moves[curSwapPosition][2] = curMove[2];
-	//		moves[curSwapPosition][3] = curMove[3];
-
-	//		moves[i][0] = swapTemp[0];
-	//		moves[i][1] = swapTemp[1];
-	//		moves[i][2] = swapTemp[2];
-	//		moves[i][3] = swapTemp[3];
-	//		curSwapPosition++;
-	//	}
-	//	if (curSwapPosition == 2){
-	//		break;
-	//	}
-	//}
 
 	for (int i = 0; i < numKillerMoves; i++){
 		for (int j = 0; j < moveCount; j++){
@@ -977,11 +915,9 @@ void testQueen(){
 	//[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 	b[4][2][0] = KING_MAX;
-	//b[4][2].printValue = KING_MAX_C;
 	b[4][2][1] = 0;
 
 	b[5][5][0] = KING_MIN;
-	//b[5][5].printValue = KING_MIN_C;
 	b[5][5][1] = 1;
 
 	pair<int, int> values[16] = { { 2, 2 }, { 1, 1 }, { 0, 0 }, { 2, 4 }, { 1, 5 }, { 0, 6 }, { 4, 4 }, { 5, 5 }, { 5, 2 }, { 5, 4 }, { 4, 5 }, { 2, 5 }, { 1, 4 }, { 1, 2 }, { 2, 1 }, { 4, 1} };
@@ -992,7 +928,6 @@ void testQueen(){
 
 	//testing init position of queen
 	b[6][4][0] = KING_MAX;
-	//b[6][4].printValue = KING_MAX_C;
 	b[6][4][1] = 0;
 	pair<int, int> values2[11] = { { 5, 1 }, { 4, 2 }, { 4, 4 }, { 5, 5 }, { 5, 2 }, { 4, 1 }, { 3, 0 }, { 5, 4 }, { 4, 5 }, { 3, 6 }, {2, 7} };
 	testMove(6, 3, QUEEN_MAX, 11, values2);
