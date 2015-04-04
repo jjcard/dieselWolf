@@ -5,13 +5,15 @@ Language: C++
 
 Instructions:
 
--install:
+-install: I used Visual Studio to create my project, as it is first time using c++. Therefor the best way to compile it is using Visual Studio 2013. 
+
+   From what I can see, MSBuild could also work. In the file with my code, use 'MSBuild DieselWolf.sln'
 
 
--run:
+-run: run the compiled .exe in command line. Or if open in visual studio, press CTRL+F5
 
 
--play against:
+-play against: The program starts out with a display asking who is going first. 1 for you going first, 2 for you going second, so the computer going first. Then moves need to be entered in all caps such as E1E2.
 
 
 techniques used:
@@ -23,7 +25,7 @@ techniques used:
 - itertive deeping: Going to try and have it working my tournament, but haven't yet.
 
 
-How deep it searches:
+How deep it searches: It currently goes 6 plies deep, with never taking more then 3 seconds. So if I get iterative deeping working, it should be able to do 7 easily later on in the game.
 
 
 evaluation function: The evalution function is pretty simple. There is a list of weights for each piece, stored in an array called 'evalValues', where it is reflected, with negative values being for the opponants pieces, and positive for the computers. Values have come from various chess tutorials online. Then there is a seperate eval list of fuel per piece. My thought with having the fuel value being less the next lower piece, so a piece losing fuel by moving is preferable to losing a piece. But also wanted to make sure that the higher pieces don't lose all of their gas, and maybe even take a lower piece of their own board if necessary. the value per piece plus value per fuel that piece is multiplyed by its fuel, and all added up.
@@ -34,4 +36,4 @@ unusual/unique: First thing I've ever written in c++, so it is a little ugly and
 
 any bugs: 
   - game/stability wise: none
-  -bad moves: I've never seen it take it's own move if a higher piece really needed gas, but I also don't think I'm good enough at challenging it to see that happen.
+  - bad moves: I've never seen it take it's own move if a higher piece really needed gas, but I also don't think I'm good enough at challenging it to see that happen.

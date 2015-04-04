@@ -167,6 +167,7 @@ void computeMinimax(){
 		if (count > 53){
 			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax" << endl;
 		}
+		bestMove = moves[0];
 		//if (moves.size() > minimaxMoveCount){
 		//	minimaxMoveCount = moves.size();
 		//}

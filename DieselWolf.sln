@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csc180Winner", "csc180Winner\csc180Winner.vcxproj", "{BB6C32D5-C5AF-434B-AAED-42400CAE7325}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DieselWolf", "csc180Winner\csc180Winner.vcxproj", "{BB6C32D5-C5AF-434B-AAED-42400CAE7325}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,8 +11,8 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Debug|Win32.Build.0 = Debug|Win32
+		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Debug|Win32.ActiveCfg = Release|Win32
+		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Debug|Win32.Build.0 = Release|Win32
 		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Release|Win32.ActiveCfg = Release|Win32
 		{BB6C32D5-C5AF-434B-AAED-42400CAE7325}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
