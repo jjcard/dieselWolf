@@ -7,18 +7,6 @@
 using namespace std;
 
 
-//struct Piece {	
-//	int value;
-//	int fuel;
-//	Piece(){
-//		value = 0;
-//		fuel = 3;
-//	}
-//	Piece(int init_value){
-//		value = init_value;
-//		fuel = 3;
-//	}
-//};
 void computeMinimax();
 int min(int depth, int maxFoundSoFar);
 int max(int depth, int minFoundSoFar);
