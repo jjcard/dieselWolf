@@ -36,7 +36,7 @@ bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int t
 void gameOver(bool maxPlayerOne);
 bool isPlayerGoingFirst();
 char getPrintValue(int value);
-void sortMoves(int moves[70][4], int moveCount, int depth);
+void sortMoves(int moves[100][4], int moveCount, int depth);
 
 
 
@@ -71,7 +71,7 @@ const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_
 //piece evalution values
 const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
 //fuel evalution values - want pieces to be able to move, so less then piece evalution values
-const int evalFuelValues[9] = {-899, -750, -270, -290, 0, 290, 270, 750, 899 };
+const int evalFuelValues[9] = { -899, -750, -270, -290, 0, 290, 270, 750, 899 };
 //minimax stuff
 const int BEST_MAX =  9000000;
 const int BEST_MIN = -9000000;
@@ -157,14 +157,14 @@ void computeMinimax(){
 	evalCount = 0;
 	int *bestMove;
 
-	int moves[70][4] ;
+	int moves[100][4] ;
 	//moves.reserve(38);
 	int count = getPossibleMovesMax(moves);
 	if (count == 0){
 		gameOver(false);
 	}
 	else {
-		if (count > 70){
+		if (count > 100){
 			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax: " << count << endl;
 		}
 		bestMove = moves[0];
@@ -224,13 +224,13 @@ void computeMinimax(){
 }
 int min(int depth, int maxFoundSoFar){
 	
-	int moves[70][4];
+	int moves[100][4];
 	int count = getPossibleMovesMin(moves);
 	if (count == 0){
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
-	if (count > 70){
+	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN: " << count << endl;
 	}
 	//if (moves.size() > minMoveCount){
@@ -280,13 +280,13 @@ int min(int depth, int maxFoundSoFar){
 }
 int max(int depth, int minFoundSoFar){
 	
-	int moves[70][4];
+	int moves[100][4];
 	int count = getPossibleMovesMax(moves);
 	if (count == 0){
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
-	if (count > 70){
+	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX: " << count << endl;
 	}
 	//if (moves.size() > maxMoveCount){
@@ -332,7 +332,7 @@ int max(int depth, int minFoundSoFar){
 	}
 	return bestScore;
 }
-void sortMoves(int moves[70][4], int moveCount, int depth){
+void sortMoves(int moves[100][4], int moveCount, int depth){
 	//int (*killerMovesDepth)[4] = killerMoves[depth];
 	int *curMove;
 	int curSwapPosition = 0;
@@ -479,7 +479,7 @@ void gameOver(bool maxPlayerOne){
 //gets, validates and makes the players move
 void getPlayerMove(){
 	
-	int moves[70][4];
+	int moves[100][4];
 	int count = getPossibleMovesMin(moves);
 	if (count == 0){
 		//he has no moves, I win
@@ -1068,7 +1068,7 @@ void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, 
 
 	printboard();
 
-	int moves[70][4];
+	int moves[100][4];
 	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
 		int to_row = values[i].first;
@@ -1125,7 +1125,7 @@ void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]){
 	cout << "Starting positions: " << endl;
 	printboard();
 
-	int moves[70][4];
+	int moves[100][4];
 	int count = getPossibleMovesMax(moves);
 	for (int i = 0; i < valuesCount; i++){
 		//cout << "Starting positions: " << endl;
