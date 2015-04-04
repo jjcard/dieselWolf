@@ -20,6 +20,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB6C32D5-C5AF-434B-AAED-42400CAE7325}</ProjectGuid>
     <RootNamespace>csc180Winner</RootNamespace>
+    <ProjectName>DieselWolf</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

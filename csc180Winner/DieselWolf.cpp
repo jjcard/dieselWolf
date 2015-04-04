@@ -110,9 +110,9 @@ int killerMoves[maxDepth][numKillerMoves][4];
 int evalCount = 0;
 clock_t start;
 double duration;
-unsigned int minimaxMoveCount = 0;
-unsigned int maxMoveCount = 0;
-unsigned int minMoveCount = 0;
+//unsigned int minimaxMoveCount = 0;
+//unsigned int maxMoveCount = 0;
+//unsigned int minMoveCount = 0;
 int main(){
 	if (test){
 		testKnight();
