@@ -221,6 +221,16 @@ void computeMinimax(){
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
 		}
+
+		//move up killer move pieces
+		//for (int i = 2; i < maxDepth - 1; i++){
+		//	for (int j = 0; j < numKillerMoves; j++){
+		//		killerMoves[i][j][0] = killerMoves[i + 2][j][0];
+		//		killerMoves[i][j][1] = killerMoves[i + 2][j][1];
+		//		killerMoves[i][j][2] = killerMoves[i + 2][j][2];
+		//		killerMoves[i][j][3] = killerMoves[i + 2][j][3];
+		//	}
+		//}
 	}
 }
 int min(int depth, int maxFoundSoFar){
