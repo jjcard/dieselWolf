@@ -877,7 +877,15 @@ void printboard(){
 	cout << "--------------------------" << endl;
 	cout << "   A  B  C  D  E  F  G  H" << endl;
 }
+bool foundWholeMove(int moves[][4], int count, int to_row, int to_col, int from_row, int from_col){
+	for (int i = 0; i < count; i++){
+		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
+			return true;
+		}
+	}
+	return false;
 
+}
 
 
 
@@ -893,15 +901,7 @@ int foundMove(int moves[][4], int count, int to_row, int to_col){
 	}
 	return -1;
 }
-bool foundWholeMove(int moves[][4], int count, int to_row, int to_col, int from_row, int from_col){
-	for (int i = 0; i < count; i++){
-		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
-			return true;
-		}
-	}
-	return false;
 
-}
 void testKnight(){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 	//[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
