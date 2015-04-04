@@ -83,7 +83,7 @@ const char printValues[9] = { KING_MIN_C, QUEEN_MIN_C, KNIGHT_MIN_C, BISHOP_MIN_
 //piece evalution values
 const int evalValues[9] = {-30000, -900, -300, -325, 0, 325, 300, 900, 30000};
 //fuel evalution values - want pieces to be able to move, so less then piece evalution values
-const int evalFuelValues[9] = {-899, -750, -280, -300, 0, 300, 280, 750, 899 };
+const int evalFuelValues[9] = {-899, -750, -270, -290, 0, 290, 270, 750, 899 };
 //minimax stuff
 const int BEST_MAX =  9000000;
 const int BEST_MIN = -9000000;
@@ -101,7 +101,7 @@ const bool test = false;
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 int b[BOARD_ROWS][BOARD_COLS][2];
 
-const int maxDepth = 5;
+const int maxDepth = 6;
 
 
 //the killer moves for the game

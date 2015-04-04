@@ -1,0 +1,37 @@
+Program Name: Diesel Wolf
+Programmer: John Hill
+Project: CSC 180 HW2 - Adversarial Search  
+Language: C++
+
+Instructions:
+
+-install:
+
+
+-run:
+
+
+-play against:
+
+
+techniques used:
+
+- aplha beta pruning: minFoundSoFar/maxFoundSoFar is passed into the min/max functions respectivly. Then when a current score is greater then the bestScore in that loop, it is checked against the (min/max)FoundSoFar score. If it it less then or greater then respectivily, then the branch is cut from then on.
+
+- killer move heuristic: There is a 3D array called killerMoves. First D is the depth we are looking it, second is the list of stored killer moves, and third is the move itself. It is configurable, so for now there is 2 moves stored per depth. When a move that produces a alpha-beta prune is found, all the list of killer moves of that depth is moved up. So the oldest one is removed. And the new one is added at the front. Then during move generation, all killer moves for that depth are iterated through, and checked against the generated moves. If they match, they are moved towards the front of the list of moves. After implementing killer moves, I found about a 50-75% reduction of time to compute a move at 5 plies deep.
+
+- itertive deeping: Going to try and have it working my tournament, but haven't yet.
+
+
+How deep it searches:
+
+
+evaluation function: The evalution function is pretty simple. There is a list of weights for each piece, stored in an array called 'evalValues', where it is reflected, with negative values being for the opponants pieces, and positive for the computers. Values have come from various chess tutorials online. Then there is a seperate eval list of fuel per piece. My thought with having the fuel value being less the next lower piece, so a piece losing fuel by moving is preferable to losing a piece. But also wanted to make sure that the higher pieces don't lose all of their gas, and maybe even take a lower piece of their own board if necessary. the value per piece plus value per fuel that piece is multiplyed by its fuel, and all added up.
+
+How strong I think it is: I am a little worried about my evalation heuristic. My program is pretty fast, at least as far as I can tell, since I've never worked with c++ before. But it does not have anything fancy like history table, bit boards, or transposition tables like I wanted to do. It is throughly tested though, so I'm pretty sure there is no huge bugs dealing with the rules of the game, nor with it crashing during play. So I would probably give my program an 8/10 for how strong it is.
+
+unusual/unique: First thing I've ever written in c++, so it is a little ugly and unweildly. There is probably things I could have done better, or at least made it have less code.
+
+any bugs: 
+  - game/stability wise: none
+  -bad moves: I've never seen it take it's own move if a higher piece really needed gas, but I also don't think I'm good enough at challenging it to see that happen.

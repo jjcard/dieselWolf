@@ -14,7 +14,8 @@
     <ClCompile Include="DieselWolf.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Text.txt" />
+    <Text Include="GameInfo.txt" />
+    <Text Include="Report.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB6C32D5-C5AF-434B-AAED-42400CAE7325}</ProjectGuid>
