@@ -89,13 +89,23 @@ const bool test = false;
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 int b[BOARD_ROWS][BOARD_COLS][2];
 
-const int maxDepth = 7;
+//const int maxDepth = 7;
 
 
 //the killer moves for the game
 const int numKillerMoves = 2;
-int killerMoves[maxDepth][numKillerMoves][4];
+int killerMoves[20][numKillerMoves][4];
+
+
+//iterative deepening
 int evalCount = 0;
+const int maxEvalCount = 3011612;
+//const int maxEvalCount = 1612;
+bool stopSearch = false;
+int currentMaxDepth = 2;
+
+
+
 clock_t start;
 double duration;
 int main(){
@@ -124,7 +134,7 @@ int main(){
 	}
 }
 int evaluate(){
-	//evalCount++;
+	evalCount++;
 	//cout << "Evaluate has been called " << evalCount <<" times" << endl;
 	int eval = 0;
 	int curVal;
@@ -137,6 +147,11 @@ int evaluate(){
 				eval += evalValues[curVal + 4] + evalFuelValues[curVal + 4] * b[i][j][1];
 			}
 		}
+	}
+
+	if (evalCount >= maxEvalCount){
+		stopSearch = true;
+		//cout << "In evaluate, above count, setting stop search to true" << endl;
 	}
 	return eval;
 }
@@ -153,6 +168,7 @@ void computeMinimax(){
 	int bestScore = BEST_MIN;
 	evalCount = 0;
 	int *bestMove;
+	int *currentBestMove;
 
 	int moves[100][4] ;
 	int count = getPossibleMovesMax(moves);
@@ -163,30 +179,82 @@ void computeMinimax(){
 		if (count > 100){
 			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax: " << count << endl;
 		}
-		bestMove = moves[0];
-
+		currentBestMove = moves[0];
+		bestMove = currentBestMove;
 		int curScore;
 		int pieceTaken[3];
+		//for (int i = 0; i < count; i++){
+		//	makeMove(moves[i], pieceTaken);
+		//	if (pieceTaken[0] == KING_MIN){
+		//		//taken their king!
+		//		curScore = WIN_MAX;
+
+		//		evalCount++;
+		//	}
+		//	else {
+		//		curScore = min(2, bestScore);
+		//	}
+		//	if (curScore > bestScore){
+		//		bestScore = curScore;
+		//		bestMove = moves[i];
+		//	}
+		//	retractMove(moves[i], pieceTaken);
+		//}
+		stopSearch = false;
 		for (int i = 0; i < count; i++){
 			makeMove(moves[i], pieceTaken);
 			if (pieceTaken[0] == KING_MIN){
 				//taken their king!
 				curScore = WIN_MAX;
-			}
-			else {
-				curScore = min(2, bestScore);
-			}
-			if (curScore > bestScore){
-				bestScore = curScore;
 				bestMove = moves[i];
+				stopSearch = true;
+				retractMove(moves[i], pieceTaken);
+				break;
 			}
+
 			retractMove(moves[i], pieceTaken);
+
 		}
+		
+		if (!stopSearch){
+			//didn't find a winning move in the first move
+			currentMaxDepth = 2;
+			while (true){
+				bestScore = BEST_MIN;
+				for (int i = 0; i < count; i++){
+					makeMove(moves[i], pieceTaken);
+					curScore = min(2, bestScore);
+					if (curScore > bestScore){
+						bestScore = curScore;
+						currentBestMove = moves[i];
+					}
+					retractMove(moves[i], pieceTaken);
+					if (stopSearch){
+						//cout << "In minimax, breaking out of for loop" << endl;
+						break;
+					}
+				}
+				if (stopSearch){
+					//cout << "In minimax, breaking out of while loop" << endl;
+					break;
+				}
+				else {
+					bestMove = currentBestMove;
+					currentMaxDepth++;
+				}
+			
+
+			}
+		}
+
+
+
+
+
 		//make the best move
 		makeMove(bestMove, pieceTaken);
 
 		//print out move in notation of screen coordinites
-		
 		int from_row_act = bestMove[0] + 1;
 		char from_col_act = bestMove[1]+ 'A';
 		
@@ -198,6 +266,8 @@ void computeMinimax(){
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
+		cout << "And the eval count was " << evalCount << endl;
+		cout << "And the max Depth was " << currentMaxDepth << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
@@ -219,13 +289,14 @@ int min(int depth, int maxFoundSoFar){
 	int moves[100][4];
 	int count = getPossibleMovesMin(moves);
 	if (count == 0){
+		evalCount++;
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
 	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN: " << count << endl;
 	}
-	if (depth == maxDepth){ return evaluate();}
+	if (depth == currentMaxDepth){ return evaluate(); }
 	int bestScore = BEST_MAX;
 
 	sortMoves(moves, count, depth);
@@ -234,6 +305,7 @@ int min(int depth, int maxFoundSoFar){
 	for (int i = 0; i < count; i++){
 		makeMove(moves[i], pieceTaken);
 		if (pieceTaken[0] == KING_MAX){
+			evalCount++;
 			//taken my king!
 			curScore = WIN_MIN + depth;
 		}
@@ -264,6 +336,10 @@ int min(int depth, int maxFoundSoFar){
 				return bestScore;
 			}
 		}
+		if (stopSearch){
+			//cout << "In min, breaking out of while loop" << endl;
+			return bestScore;
+		}
 	}
 	return bestScore;
 }
@@ -272,13 +348,14 @@ int max(int depth, int minFoundSoFar){
 	int moves[100][4];
 	int count = getPossibleMovesMax(moves);
 	if (count == 0){
+		evalCount++;
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
 	if (count > 100){
 		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX: " << count << endl;
 	}
-	if (depth == maxDepth){ return evaluate(); }
+	if (depth == currentMaxDepth){ return evaluate(); }
 	int bestScore = BEST_MIN;
 
 	sortMoves(moves, count, depth);
@@ -288,6 +365,7 @@ int max(int depth, int minFoundSoFar){
 		makeMove(moves[i], pieceTaken);
 
 		if (pieceTaken[0] == KING_MIN){
+			evalCount++;
 			//taken their king!
 			curScore = WIN_MAX - depth;
 		}
@@ -314,6 +392,10 @@ int max(int depth, int minFoundSoFar){
 				killerMoves[depth][0][3] = moves[i][3];
 				return bestScore;
 			}
+		}
+		if (stopSearch){
+			//cout << "In max, breaking out of while loop" << endl;
+			return bestScore;
 		}
 	}
 	return bestScore;
