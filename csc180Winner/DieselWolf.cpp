@@ -183,23 +183,6 @@ void computeMinimax(){
 		bestMove = currentBestMove;
 		int curScore;
 		int pieceTaken[3];
-		//for (int i = 0; i < count; i++){
-		//	makeMove(moves[i], pieceTaken);
-		//	if (pieceTaken[0] == KING_MIN){
-		//		//taken their king!
-		//		curScore = WIN_MAX;
-
-		//		evalCount++;
-		//	}
-		//	else {
-		//		curScore = min(2, bestScore);
-		//	}
-		//	if (curScore > bestScore){
-		//		bestScore = curScore;
-		//		bestMove = moves[i];
-		//	}
-		//	retractMove(moves[i], pieceTaken);
-		//}
 		stopSearch = false;
 		for (int i = 0; i < count; i++){
 			makeMove(moves[i], pieceTaken);
