@@ -99,8 +99,7 @@ int killerMoves[20][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3011612;
-//const int maxEvalCount = 1612;
+const int maxEvalCount = 3111612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 
@@ -184,6 +183,7 @@ void computeMinimax(){
 		int curScore;
 		int pieceTaken[3];
 		stopSearch = false;
+		//check to see if can win right away
 		for (int i = 0; i < count; i++){
 			makeMove(moves[i], pieceTaken);
 			if (pieceTaken[0] == KING_MIN){
@@ -230,10 +230,6 @@ void computeMinimax(){
 			}
 		}
 
-
-
-
-
 		//make the best move
 		makeMove(bestMove, pieceTaken);
 
@@ -250,7 +246,7 @@ void computeMinimax(){
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
 		cout << "And the eval count was " << evalCount << endl;
-		cout << "And the max Depth was " << currentMaxDepth << endl;
+		cout << "And the max Depth was " << (currentMaxDepth -1) << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
 			gameOver(true);
