@@ -99,9 +99,12 @@ int killerMoves[20][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3111612;
+const int maxEvalCount = 3811612;
+//const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
+//end game it will run forever, need to stop it somewhere
+const int maxDepth = 100;
 
 
 
@@ -217,16 +220,15 @@ void computeMinimax(){
 						break;
 					}
 				}
-				if (stopSearch){
+				if (stopSearch || currentMaxDepth >= maxDepth){
 					//cout << "In minimax, breaking out of while loop" << endl;
 					break;
 				}
 				else {
 					bestMove = currentBestMove;
 					currentMaxDepth++;
+					//cout << "Increasing max depth to " << currentMaxDepth << endl;
 				}
-			
-
 			}
 		}
 
