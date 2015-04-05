@@ -188,18 +188,13 @@ void computeMinimax(){
 		stopSearch = false;
 		//check to see if can win right away
 		for (int i = 0; i < count; i++){
-			makeMove(moves[i], pieceTaken);
-			if (pieceTaken[0] == KING_MIN){
+			if (b[moves[i][2]][moves[i][3]][0] == KING_MIN) {
 				//taken their king!
 				curScore = WIN_MAX;
 				bestMove = moves[i];
 				stopSearch = true;
-				retractMove(moves[i], pieceTaken);
 				break;
 			}
-
-			retractMove(moves[i], pieceTaken);
-
 		}
 		
 		if (!stopSearch){
