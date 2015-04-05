@@ -94,12 +94,12 @@ int b[BOARD_ROWS][BOARD_COLS][2];
 
 //the killer moves for the game
 const int numKillerMoves = 2;
-int killerMoves[20][numKillerMoves][4];
+int killerMoves[100][numKillerMoves][4];
 
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3811612;
+const int maxEvalCount = 3911612;
 //const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
@@ -211,18 +211,15 @@ void computeMinimax(){
 					}
 					retractMove(moves[i], pieceTaken);
 					if (stopSearch){
-						//cout << "In minimax, breaking out of for loop" << endl;
 						break;
 					}
 				}
 				if (stopSearch || currentMaxDepth >= maxDepth){
-					//cout << "In minimax, breaking out of while loop" << endl;
 					break;
 				}
 				else {
 					bestMove = currentBestMove;
 					currentMaxDepth++;
-					//cout << "Increasing max depth to " << currentMaxDepth << endl;
 				}
 			}
 		}
@@ -313,7 +310,6 @@ int min(int depth, int maxFoundSoFar){
 			}
 		}
 		if (stopSearch){
-			//cout << "In min, breaking out of while loop" << endl;
 			return bestScore;
 		}
 	}
@@ -370,7 +366,6 @@ int max(int depth, int minFoundSoFar){
 			}
 		}
 		if (stopSearch){
-			//cout << "In max, breaking out of while loop" << endl;
 			return bestScore;
 		}
 	}
@@ -383,7 +378,7 @@ void sortMoves(int moves[100][4], int moveCount, int depth){
 	int swapTemp[4];
 
 	for (int i = 0; i < numKillerMoves; i++){
-		for (int j = 0; j < moveCount; j++){
+		for (int j = curSwapPosition; j < moveCount; j++){
 			curMove = moves[j];
 			if (killerMoves[depth][i][0] == curMove[0] && 
 				killerMoves[depth][i][1] == curMove[1] &&
@@ -493,7 +488,6 @@ void getPlayerMove(){
 		int from_col_act = from_col - 'A';
 		int to_col_act = to_col - 'A';
 
-		//cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		while (!isMovePossibleMin(moves, count, from_row_act, from_col_act, to_row_act, to_col_act)){
 			cout << "Move not legal, please enter another move: ";
 			cin >> from_col >> from_row >> to_col >> to_row;
@@ -503,7 +497,6 @@ void getPlayerMove(){
 			from_col_act = from_col - 'A';
 			to_col_act = to_col - 'A';
 
-			//cout << "You put in " << from_col_act << ' ' << from_row_act << " to " << to_col_act << ' ' << to_row_act << endl;
 		}
 
 		int m[4] = { from_row_act, from_col_act, to_row_act, to_col_act };
