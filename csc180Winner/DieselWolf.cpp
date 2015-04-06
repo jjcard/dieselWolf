@@ -461,7 +461,6 @@ void gameOver(bool maxPlayerOne){
 	else {
 		cout << "You won!" << endl;
 	}
-	//cout << "Max minimax move count " << minimaxMoveCount << ", for Max: " << maxMoveCount << ", for Min: " << minMoveCount << endl;
 	char anyChar;
 	cout << "Press any key + enter to end";
 	cin >> anyChar;
@@ -570,12 +569,8 @@ int getPossibleMovesMax(int re[][4]){
 				else if (value == KNIGHT_MAX){
 					moveKnight(re, count, i, j, KING_MAX);
 				}
-				else if (value == BISHOP_MAX){
+				else {//if (value == BISHOP_MAX){
 					moveBishop(re, count, i, j, KING_MAX);
-				}
-				else {
-					//this shouldn't happen
-					cout << "THIS SHOULD NOT HAPPEN in max";
 				}
 			}
 		}
@@ -602,12 +597,8 @@ int getPossibleMovesMin(int re[][4]){
 				else if (value == KNIGHT_MIN){
 					moveKnight(re, count, i, j, KING_MIN);
 				}
-				else if (value == BISHOP_MIN){
+				else {//if (value == BISHOP_MIN){
 					moveBishop(re, count, i, j, KING_MIN);
-				}
-				else {
-					//this shouldn't happen
-					cout << "THIS SHOULD NOT HAPPEN in min";
 				}
 			}
 
