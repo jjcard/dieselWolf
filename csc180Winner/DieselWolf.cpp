@@ -178,9 +178,9 @@ void computeMinimax(){
 		gameOver(false);
 	}
 	else {
-		if (count > 100){
-			cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax: " << count << endl;
-		}
+		//if (count > 100){
+		//	cout << "OH NO, IT SHOULDN'T BE THIS LONG IN Minimax: " << count << endl;
+		//}
 		currentBestMove = moves[0];
 		bestMove = currentBestMove;
 		int curScore;
@@ -266,9 +266,9 @@ int min(int depth, int maxFoundSoFar){
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
-	if (count > 100){
-		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN: " << count << endl;
-	}
+	//if (count > 100){
+	//	cout << "OH NO, IT SHOULDN't BE THIS LONG IN MIN: " << count << endl;
+	//}
 	if (depth == currentMaxDepth){ return evaluate(); }
 	int bestScore = BEST_MAX;
 
@@ -324,9 +324,9 @@ int max(int depth, int minFoundSoFar){
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
-	if (count > 100){
-		cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX: " << count << endl;
-	}
+	//if (count > 100){
+	//	cout << "OH NO, IT SHOULDN't BE THIS LONG IN MAX: " << count << endl;
+	//}
 	if (depth == currentMaxDepth){ return evaluate(); }
 	int bestScore = BEST_MIN;
 
