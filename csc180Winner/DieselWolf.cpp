@@ -557,20 +557,21 @@ int getPossibleMovesMax(int re[][4]){
 		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j][0] > 0 && b[i][j][1] > 0){
 				//aka is a max piece and it can move
-				int value = b[i][j][0];
 
-				if (value == KING_MAX){
+				switch (b[i][j][0]){
+				case BISHOP_MAX:
+					moveBishop(re, count, i, j, KING_MAX);
+					break;
+				case KNIGHT_MAX:
+					moveKnight(re, count, i, j, KING_MAX);
+					break;
+				case QUEEN_MAX:
+					moveKnight(re, count, i, j, KING_MAX);
+					moveBishop(re, count, i, j, KING_MAX);
+					break;
+				case KING_MAX:
 					moveKing(re, count, i, j);
-				}
-				else if (value == QUEEN_MAX){
-					moveKnight(re, count, i, j, KING_MAX);
-					moveBishop(re, count, i, j, KING_MAX);
-				}
-				else if (value == KNIGHT_MAX){
-					moveKnight(re, count, i, j, KING_MAX);
-				}
-				else {//if (value == BISHOP_MAX){
-					moveBishop(re, count, i, j, KING_MAX);
+					break;
 				}
 			}
 		}
@@ -585,20 +586,21 @@ int getPossibleMovesMin(int re[][4]){
 			if (b[i][j][0] < 0 && b[i][j][1] > 0){
 				//aka is a min piece
 				//aka is a max piece and it can move
-				int value = b[i][j][0];
 
-				if (value == KING_MIN){
+				switch (b[i][j][0]){
+				case BISHOP_MIN:
+					moveBishop(re, count, i, j, KING_MIN);
+					break;
+				case KNIGHT_MIN:
+					moveKnight(re, count, i, j, KING_MIN);
+					break;
+				case QUEEN_MIN:
+					moveKnight(re, count, i, j, KING_MIN);
+					moveBishop(re, count, i, j, KING_MIN);
+					break;
+				case KING_MIN:
 					moveKing(re, count, i, j);
-				}
-				else if (value == QUEEN_MIN){
-					moveKnight(re, count, i, j, KING_MIN);
-					moveBishop(re, count, i, j, KING_MIN);
-				}
-				else if (value == KNIGHT_MIN){
-					moveKnight(re, count, i, j, KING_MIN);
-				}
-				else {//if (value == BISHOP_MIN){
-					moveBishop(re, count, i, j, KING_MIN);
+					break;
 				}
 			}
 
