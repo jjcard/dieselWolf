@@ -146,7 +146,7 @@ int evaluate(){
 			curVal = b[i][j][0];
 			if (curVal != 0){
 				//an actual piece
-				eval += evalValues[curVal + 4] + evalFuelValues[curVal + 4] * b[i][j][1];
+				eval += evalValues[curVal + 4] + b[i][j][1] * evalFuelValues[curVal + 4];
 			}
 		}
 	}
