@@ -137,7 +137,12 @@ int main(){
 	}
 }
 int evaluate(){
-	evalCount++;
+	evalCount++;	
+	if (evalCount >= maxEvalCount){
+		stopSearch = true;
+		//cout << "In evaluate, above count, setting stop search to true" << endl;
+		return 0;
+	}
 	int eval = 0;
 	int curVal;
 	//int curFuel;
@@ -151,10 +156,7 @@ int evaluate(){
 		}
 	}
 
-	if (evalCount >= maxEvalCount){
-		stopSearch = true;
-		//cout << "In evaluate, above count, setting stop search to true" << endl;
-	}
+
 	return eval;
 }
 bool isPlayerGoingFirst(){
@@ -343,10 +345,10 @@ int max(int depth, int minFoundSoFar){
 				//alpha beta prune, it can only be bigger
 				//move everything down the killer move list
 				for (int j = numKillerMoves -2; j >= 0 ; j--){
-					killerMoves[depth][j + 1][0] = killerMoves[depth][j][1];
-					killerMoves[depth][j + 1][1] = killerMoves[depth][j][2];
-					killerMoves[depth][j + 1][2] = killerMoves[depth][j][3];
-					killerMoves[depth][j + 1][3] = killerMoves[depth][j][4];
+					killerMoves[depth][j + 1][0] = killerMoves[depth][j][0];
+					killerMoves[depth][j + 1][1] = killerMoves[depth][j][1];
+					killerMoves[depth][j + 1][2] = killerMoves[depth][j][2];
+					killerMoves[depth][j + 1][3] = killerMoves[depth][j][3];
 				}
 				//add to killer move list
 				killerMoves[depth][0][0] = moves[i][0];
