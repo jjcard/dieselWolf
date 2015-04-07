@@ -88,12 +88,12 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3900500;
+const int maxEvalCount = 15499999;
 //const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 95;
+const int maxDepth = 50;
 
 
 
@@ -497,7 +497,7 @@ void makeMove(int move[4], int pieceTaken[3]){
 	}
 	else {
 		//aka an actual piece
-		pFuel = 3;
+		pFuel = GAS_MAX;
 	}
 	b[move[2]][move[3]][0] = pVal;
 	b[move[2]][move[3]][1] = pFuel;
