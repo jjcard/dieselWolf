@@ -8,8 +8,8 @@ using namespace std;
 
 
 void computeMinimax();
-int min(int depth, int maxFoundSoFar);
-int max(int depth, int minFoundSoFar);
+int min(int depth, int &maxFoundSoFar);
+int max(int depth, int &minFoundSoFar);
 int evaluate();
 void getPlayerMove();
 void setup();
@@ -26,7 +26,7 @@ bool foundWholeMove(int re[100][4], int count, int to_row, int to_col, int from_
 bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col);
 void gameOver(bool maxPlayerOne);
 bool isPlayerGoingFirst();
-void sortMoves(int moves[100][4], int moveCount, int depth);
+void sortMoves(int moves[100][4], int &moveCount, int depth);
 
 
 int foundMove(int re[][4], int count, int to_row, int to_col);
@@ -256,7 +256,7 @@ void computeMinimax(){
 		//}
 	}
 }
-int min(int depth, int maxFoundSoFar){
+int min(int depth, int &maxFoundSoFar){
 	
 	int moves[100][4];
 	int count = getPossibleMovesMin(moves);
@@ -313,7 +313,7 @@ int min(int depth, int maxFoundSoFar){
 	}
 	return bestScore;
 }
-int max(int depth, int minFoundSoFar){
+int max(int depth, int &minFoundSoFar){
 	
 	int moves[100][4];
 	int count = getPossibleMovesMax(moves);
@@ -367,7 +367,7 @@ int max(int depth, int minFoundSoFar){
 	}
 	return bestScore;
 }
-void sortMoves(int moves[100][4], int moveCount, int depth){
+void sortMoves(int moves[100][4], int &moveCount, int depth){
 	//int (*killerMovesDepth)[4] = killerMoves[depth];
 	int *curMove;
 	int curSwapPosition = 0;
