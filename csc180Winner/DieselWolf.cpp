@@ -14,30 +14,31 @@ int evaluate();
 void getPlayerMove();
 void setup();
 void printboard();
-void makeMove(int move[], int pieceTaken[]);
-void retractMove(int move[], int pieceTaken[]);
-int getPossibleMovesMin(int re[][4]);
-int getPossibleMovesMax(int re[][4]);
+void makeMove(int move[4], int pieceTaken[3]);
+void retractMove(int move[4], int pieceTaken[3]);
+int getPossibleMovesMin(int re[100][4]);
+int getPossibleMovesMax(int re[100][4]);
 bool moveInBounds(int to_col, int to_row);
-void moveKnight(int re[][4], int &count, int i, int j, int kingVal);
-void moveKing(int re[][4], int &count, int i, int j);
-void moveBishop(int re[][4], int &count, int i, int j, int kingVal);
-void testKnight();
-void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, int> values[]);
-void clearPosition(int row, int col);
+void moveKnight(int re[100][4], int &count, int i, int j, int kingVal);
+void moveKing(int re[100][4], int &count, int i, int j);
+void moveBishop(int re[100][4], int &count, int i, int j, int kingVal);
+bool foundWholeMove(int re[100][4], int count, int to_row, int to_col, int from_row, int from_col);
+bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col);
+void gameOver(bool maxPlayerOne);
+bool isPlayerGoingFirst();
+void sortMoves(int moves[100][4], int moveCount, int depth);
+
+
+int foundMove(int re[][4], int count, int to_row, int to_col);
 void testKing();
 void testBishop();
 void testQueen();
-int foundMove(int re[][4], int count, int to_row, int to_col);
-bool foundWholeMove(int re[][4], int count, int to_row, int to_col, int from_row, int from_col);
+char getPrintValue(int value);
 void testPostSetUp();
 void testMove(int valuesCount, pair<pair<int, int>, pair<int, int>> values[]);
-bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int to_row, int to_col);
-void gameOver(bool maxPlayerOne);
-bool isPlayerGoingFirst();
-char getPrintValue(int value);
-void sortMoves(int moves[100][4], int moveCount, int depth);
-
+void testKnight();
+void testMove(int from_row, int from_col, int value, int valuesCount, pair<int, int> values[]);
+void clearPosition(int row, int col);
 
 
 const int BOARD_ROWS = 7;
@@ -99,7 +100,7 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3911612;
+const int maxEvalCount = 3910000;
 //const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
@@ -509,24 +510,24 @@ void getPlayerMove(){
 	}
 }
 //makes the move on the board
-void makeMove(int move[], int pieceTaken[]){
+void makeMove(int move[4], int pieceTaken[3]){
 	int pVal = b[move[0]][move[1]][0];
 	int pFuel = b[move[0]][move[1]][1];
 	pieceTaken[0] = b[move[2]][move[3]][0];
 	pieceTaken[1] = b[move[2]][move[3]][1];
 	b[move[0]][move[1]][0] = 0;
 	pieceTaken[2] = pFuel;
-	if (pieceTaken[0] != 0){
-		//aka an actual piece
-		pFuel = 3;
+	if (pieceTaken[0] == 0){
+		pFuel--;
 	}
 	else {
-		pFuel--;
+		//aka an actual piece
+		pFuel = 3;
 	}
 	b[move[2]][move[3]][0] = pVal;
 	b[move[2]][move[3]][1] = pFuel;
 }
-void retractMove(int move[], int pieceTaken[]){
+void retractMove(int move[4], int pieceTaken[3]){
 	
 	//pieceTaken[0] = taken's value
 	//pieceTaken[1] = taken's fuel
@@ -543,7 +544,7 @@ void retractMove(int move[], int pieceTaken[]){
 	b[move[2]][move[3]][0] = pieceTaken[0];
 	b[move[2]][move[3]][1] = pieceTaken[1];
 }
-int getPossibleMovesMax(int re[][4]){
+int getPossibleMovesMax(int re[100][4]){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 	//[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
 	//[4, 0] [4, 1] [4, 2] [4, 3] [4, 4] [4, 5] [4, 6] [4, 7]
@@ -578,15 +579,13 @@ int getPossibleMovesMax(int re[][4]){
 	}
 	return count;
 }
-int getPossibleMovesMin(int re[][4]){
+int getPossibleMovesMin(int re[100][4]){
 	//min player turn
 	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
 		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j][0] < 0 && b[i][j][1] > 0){
 				//aka is a min piece
-				//aka is a max piece and it can move
-
 				switch (b[i][j][0]){
 				case BISHOP_MIN:
 					moveBishop(re, count, i, j, KING_MIN);
@@ -603,16 +602,15 @@ int getPossibleMovesMin(int re[][4]){
 					break;
 				}
 			}
-
 		}
 	}
 	return count;
 }
 //given possible moves for the player, sees if the move they want to do is valid
-bool isMovePossibleMin(int re[][4], int count, int from_row, int from_col, int to_row, int to_col){
+bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col){
 	return  foundWholeMove(re, count, to_row, to_col, from_row, from_col);
 }
-void moveKing(int re[][4], int &count, int i, int j){
+void moveKing(int re[100][4], int &count, int i, int j){
 	//(+1, +1), (+1, 0), (+1, -1), (0, -1), (0, +1), (-1, 0), (-1, +1), (-1, -1) 
 
 	int to_row = i + 1, to_col = j + 1; //(+1, +1)
@@ -680,7 +678,7 @@ void moveKing(int re[][4], int &count, int i, int j){
 		count++;
 	}
 }
-void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
+void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 	//(+2, +1), (+2, -1), (-2, +1), (-2, -1), (+1, +2), (+1, -2), (-1, +2), (-1, -2) 
 	//can't kill own king
 	int to_row = i + 2, to_col = j + 1; //(+2, +1)
@@ -748,7 +746,7 @@ void moveKnight(int re[][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 }
-void moveBishop(int re[][4], int &count, int i, int j, int kingVal){
+void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 	//goes 4 directions. goes until it either hits the end or captures a piece
 	//(-1, -1), (-1, +1), (+1, +1), (+1, -1)
 
@@ -858,7 +856,7 @@ void printboard(){
 	cout << "--------------------------" << endl;
 	cout << "   A  B  C  D  E  F  G  H" << endl;
 }
-bool foundWholeMove(int moves[][4], int count, int to_row, int to_col, int from_row, int from_col){
+bool foundWholeMove(int moves[100][4], int count, int to_row, int to_col, int from_row, int from_col){
 	for (int i = 0; i < count; i++){
 		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
 			return true;
