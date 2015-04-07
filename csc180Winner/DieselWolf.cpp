@@ -100,12 +100,12 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3910000;
+const int maxEvalCount = 3905000;
 //const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 100;
+const int maxDepth = 95;
 
 
 
@@ -246,14 +246,14 @@ void computeMinimax(){
 		}
 
 		//move up killer move pieces
-		//for (int i = 2; i < maxDepth - 1; i++){
-		//	for (int j = 0; j < numKillerMoves; j++){
-		//		killerMoves[i][j][0] = killerMoves[i + 2][j][0];
-		//		killerMoves[i][j][1] = killerMoves[i + 2][j][1];
-		//		killerMoves[i][j][2] = killerMoves[i + 2][j][2];
-		//		killerMoves[i][j][3] = killerMoves[i + 2][j][3];
-		//	}
-		//}
+		for (int i = 2; i < currentMaxDepth - 1; i++){
+			for (int j = 0; j < numKillerMoves; j++){
+				killerMoves[i][j][0] = killerMoves[i + 2][j][0];
+				killerMoves[i][j][1] = killerMoves[i + 2][j][1];
+				killerMoves[i][j][2] = killerMoves[i + 2][j][2];
+				killerMoves[i][j][3] = killerMoves[i + 2][j][3];
+			}
+		}
 	}
 }
 int min(int depth, int &maxFoundSoFar){
@@ -294,6 +294,7 @@ int min(int depth, int &maxFoundSoFar){
 
 				//move everything down the killer move list
 				for (int j = numKillerMoves - 2; j >= 0; j--){
+					//cout << "IN min, moving killer move depth " << depth << " level "<< j <<endl;
 					killerMoves[depth][j + 1][0] = killerMoves[depth][j][0];
 					killerMoves[depth][j + 1][1] = killerMoves[depth][j][1];
 					killerMoves[depth][j + 1][2] = killerMoves[depth][j][2];
@@ -304,7 +305,6 @@ int min(int depth, int &maxFoundSoFar){
 				killerMoves[depth][0][1] = moves[i][1];
 				killerMoves[depth][0][2] = moves[i][2];
 				killerMoves[depth][0][3] = moves[i][3];
-
 
 				return bestScore;
 			}
@@ -350,6 +350,7 @@ int max(int depth, int &minFoundSoFar){
 				//alpha beta prune, it can only be bigger
 				//move everything down the killer move list
 				for (int j = numKillerMoves -2; j >= 0 ; j--){
+					//cout << "IN max, moving killer move depth " << depth << " level " << j << endl;
 					killerMoves[depth][j + 1][0] = killerMoves[depth][j][0];
 					killerMoves[depth][j + 1][1] = killerMoves[depth][j][1];
 					killerMoves[depth][j + 1][2] = killerMoves[depth][j][2];
