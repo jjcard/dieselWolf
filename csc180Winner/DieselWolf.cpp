@@ -282,7 +282,11 @@ int min(int depth, int maxFoundSoFar){
 			curScore = max(depth + 1, bestScore);
 		}
 
-		retractMove(moves[i], pieceTaken);
+		retractMove(moves[i], pieceTaken);		
+		
+		if (stopSearch){
+			return bestScore;
+		}
 		if (curScore < bestScore){
 			bestScore = curScore;
 			if (bestScore <= maxFoundSoFar){
@@ -305,9 +309,7 @@ int min(int depth, int maxFoundSoFar){
 				return bestScore;
 			}
 		}
-		if (stopSearch){
-			return bestScore;
-		}
+
 	}
 	return bestScore;
 }
@@ -338,7 +340,10 @@ int max(int depth, int minFoundSoFar){
 			curScore = min(depth + 1, bestScore);
 		}
 
-		retractMove(moves[i], pieceTaken);
+		retractMove(moves[i], pieceTaken);		
+		if (stopSearch){
+			return bestScore;
+		}
 		if (curScore > bestScore){
 			bestScore = curScore;
 			if (bestScore >= minFoundSoFar){
@@ -358,9 +363,7 @@ int max(int depth, int minFoundSoFar){
 				return bestScore;
 			}
 		}
-		if (stopSearch){
-			return bestScore;
-		}
+
 	}
 	return bestScore;
 }
