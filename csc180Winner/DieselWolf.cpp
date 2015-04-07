@@ -119,7 +119,6 @@ int evaluate(){
 	evalCount++;	
 	if (evalCount >= maxEvalCount){
 		stopSearch = true;
-		//cout << "In evaluate, above count, setting stop search to true" << endl;
 		return 0;
 	}
 	int eval = 0;
@@ -273,7 +272,6 @@ int min(int depth, int &maxFoundSoFar){
 
 				//move everything down the killer move list
 				for (int j = numKillerMoves - 2; j >= 0; j--){
-					//cout << "IN min, moving killer move depth " << depth << " level "<< j <<endl;
 					killerMoves[depth][j + 1][0] = killerMoves[depth][j][0];
 					killerMoves[depth][j + 1][1] = killerMoves[depth][j][1];
 					killerMoves[depth][j + 1][2] = killerMoves[depth][j][2];
@@ -360,7 +358,6 @@ void sortMoves(int moves[100][4], int &moveCount, int depth){
 				killerMoves[depth][i][1] == curMove[1] &&
 				killerMoves[depth][i][2] == curMove[2] &&
 				killerMoves[depth][i][3] == curMove[3]){
-				//cout << "Found killer move at depth " << depth << endl;
 				//swap killer move closer to the front
 				swapTemp[0] = moves[curSwapPosition][0];
 				swapTemp[1] = moves[curSwapPosition][1];
