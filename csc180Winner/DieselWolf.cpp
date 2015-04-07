@@ -79,7 +79,6 @@ const int BEST_MIN = -9000000;
 const int WIN_MAX =   2000000;
 const int WIN_MIN =  -2000000;
 
-const bool test = false;
 //so index is [row, col] 
 //[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 //[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
@@ -112,29 +111,20 @@ const int maxDepth = 95;
 clock_t start;
 double duration;
 int main(){
-	if (test){
-		testKnight();
-		testKing();
-		testBishop();
-		testQueen();
-		testPostSetUp();
-		gameOver(true);
-	}
-	else {
-		setup();
-		bool playerGoingFirst = isPlayerGoingFirst();
+	setup();
+	bool playerGoingFirst = isPlayerGoingFirst();
+	printboard();
+	if (!playerGoingFirst){
+		computeMinimax();
 		printboard();
-		if (!playerGoingFirst){
-			computeMinimax();
-			printboard();
-		}
-		for (;;){
-			getPlayerMove();
-			printboard();
-			computeMinimax();
-			printboard();
-		}
 	}
+	for (;;){
+		getPlayerMove();
+		printboard();
+		computeMinimax();
+		printboard();
+	}
+	
 }
 int evaluate(){
 	evalCount++;	
