@@ -88,8 +88,7 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 15499999;
-//const int maxEvalCount = 4411612;
+const int maxEvalCount = 15899111;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
