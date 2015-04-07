@@ -1,7 +1,6 @@
 //Program Name: Diesel Wolf
 //Author: John Hill
 #include <iostream>
-#include <vector>
 #include <cstdlib>
 #include <ctime>
 using namespace std;
@@ -89,7 +88,7 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 3905000;
+const int maxEvalCount = 3900500;
 //const int maxEvalCount = 4411612;
 bool stopSearch = false;
 int currentMaxDepth = 2;
