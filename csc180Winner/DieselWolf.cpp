@@ -78,7 +78,6 @@ const int WIN_MIN =  -2000000;
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 int b[BOARD_ROWS][BOARD_COLS][2];
 
-//const int maxDepth = 7;
 
 
 //the killer moves for the game
