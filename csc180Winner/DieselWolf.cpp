@@ -92,7 +92,7 @@ const int maxEvalCount = 15899111;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 50;
+const int maxDepth = 20;
 
 
 
