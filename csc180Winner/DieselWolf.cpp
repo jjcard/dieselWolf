@@ -9,7 +9,8 @@ using namespace std;
 void computeMinimax();
 int min(int depth, int &maxFoundSoFar);
 int max(int depth, int &minFoundSoFar);
-int evaluate();
+int evaluateMax(int moves[100][4], int &moveCount, int depth);
+int evaluateMin(int moves[100][4], int &moveCount, int depth);
 void getPlayerMove();
 void setup();
 void printboard();
@@ -26,8 +27,6 @@ bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, in
 void gameOver(bool maxPlayerOne);
 bool isPlayerGoingFirst();
 void sortMoves(int moves[100][4], int &moveCount, int depth);
-
-
 
 
 const int BOARD_ROWS = 7;
@@ -87,11 +86,14 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-const int maxEvalCount = 15899111;
+//const int maxEvalCount = 15899111;
+//const int maxEvalCount = 15011111;
+  const int maxEvalCount = 13550000;
+
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 20;
+const int maxDepth = 18;
 
 
 
@@ -113,13 +115,89 @@ int main(){
 	}
 	
 }
-int evaluate(){
+int evaluateMax(int moves[100][4], int &moveCount, int depth){
 	evalCount++;	
 	if (evalCount >= maxEvalCount){
 		stopSearch = true;
 		return 0;
 	}
 	int eval = 0;
+	int king_row = 0;
+	int king_col = 0;
+	int row = BOARD_ROWS - 1;
+	bool kingNotFound = true;
+	while (kingNotFound){
+		for (int j = 0; j < BOARD_COLS; j++){
+			if (b[row][j][0] == KING_MIN){
+				//need to find their king
+				king_row = row;
+				king_col = j;
+				kingNotFound = false;
+				break;
+			}
+		}
+		row--;
+	}
+	
+
+	for (int k = 0; k < moveCount; k++){
+		if (moves[k][2] == king_row && moves[k][3] == king_col){
+			//found a move where I take their king
+			//cout << "Found Move in eval where I take their piece" << endl;
+			return WIN_MAX - depth;
+		}
+	}
+
+	//cout << "Didn't find move where I take their piece" << endl;
+	int curVal;
+	//int curFuel;
+	for (int i = BOARD_ROWS - 1; i >= 0; i--){
+		for (int j = 0; j < BOARD_COLS; j++){
+			curVal = b[i][j][0];
+			if (curVal != 0){
+				//an actual piece
+				eval += evalValues[curVal + 4] + b[i][j][1] * evalFuelValues[curVal + 4];
+			}
+		}
+	}
+
+
+	return eval;
+}
+int evaluateMin(int moves[100][4], int &moveCount, int depth){
+	evalCount++;
+	if (evalCount >= maxEvalCount){
+		stopSearch = true;
+		return 0;
+	}
+	int eval = 0;
+
+	int king_row = 0;
+	int king_col = 0;
+	int row = BOARD_ROWS - 1;
+	bool kingNotFound = true;
+	while (kingNotFound){
+		for (int j = 0; j < BOARD_COLS; j++){
+			if (b[row][j][0] == KING_MAX){
+				//need to find my king
+				king_row = row;
+				king_col = j;
+				kingNotFound = false;
+				break;
+			}
+		}
+		row--;
+	}
+
+	for (int k = 0; k < moveCount; k++){
+		if (moves[k][2] == king_row && moves[k][3] == king_col){
+			//found a move where they take my king
+			//cout << "Found Move in eval where they take my piece" << endl;
+			return WIN_MIN + depth;
+		}
+	}
+
+	//cout << "Didn't find move where they take my piece" << endl;
 	int curVal;
 	//int curFuel;
 	for (int i = BOARD_ROWS - 1; i >= 0; i--){
@@ -241,7 +319,7 @@ int min(int depth, int &maxFoundSoFar){
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
-	if (depth == currentMaxDepth){ return evaluate(); }
+	if (depth == currentMaxDepth){ return evaluateMin(moves, count, depth); }
 	int bestScore = BEST_MAX;
 
 	sortMoves(moves, count, depth);
@@ -297,7 +375,7 @@ int max(int depth, int &minFoundSoFar){
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
-	if (depth == currentMaxDepth){ return evaluate(); }
+	if (depth == currentMaxDepth){ return evaluateMax(moves, count, depth); }
 	int bestScore = BEST_MIN;
 
 	sortMoves(moves, count, depth);
