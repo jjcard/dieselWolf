@@ -214,7 +214,7 @@ void computeMinimax(){
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
-		cout << "And the eval count was " << evalCount << endl;
+		//cout << "And the eval count was " << evalCount << endl;
 		cout << "And the max Depth was " << (currentMaxDepth -1) << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
