@@ -81,7 +81,7 @@ int b[BOARD_ROWS][BOARD_COLS][2];
 
 
 //the killer moves for the game
-const int numKillerMoves = 2;
+const int numKillerMoves = 3;
 int killerMoves[100][numKillerMoves][4];
 
 
