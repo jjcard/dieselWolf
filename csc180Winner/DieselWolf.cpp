@@ -122,8 +122,8 @@ int evaluate(){
 	int eval = 0;
 	int curVal;
 	//int curFuel;
-	for (int i = 6; i >= 0; i--){
-		for (int j = 0; j < 8; j++){
+	for (int i = BOARD_ROWS - 1; i >= 0; i--){
+		for (int j = 0; j < BOARD_COLS; j++){
 			curVal = b[i][j][0];
 			if (curVal != 0){
 				//an actual piece
@@ -214,7 +214,7 @@ void computeMinimax(){
 		duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 		cout << "It took " << duration << " seconds to make this decision" << endl;
 
-		//cout << "And the eval count was " << evalCount << endl;
+		cout << "And the eval count was " << evalCount << endl;
 		cout << "And the max Depth was " << (currentMaxDepth -1) << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
@@ -492,7 +492,7 @@ void makeMove(int move[4], int pieceTaken[3]){
 	}
 	else {
 		//aka an actual piece
-		pFuel = 3;
+		pFuel = GAS_MAX;
 	}
 	b[move[2]][move[3]][0] = pVal;
 	b[move[2]][move[3]][1] = pFuel;
@@ -524,8 +524,8 @@ int getPossibleMovesMax(int re[100][4]){
 	//[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 
 	int count = 0;
-	for (int i = 0; i < 7; i++){
-		for (int j = 0; j < 8; j++){
+	for (int i = 0; i < BOARD_ROWS; i++){
+		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j][0] > 0 && b[i][j][1] > 0){
 				//aka is a max piece and it can move
 
@@ -552,8 +552,8 @@ int getPossibleMovesMax(int re[100][4]){
 int getPossibleMovesMin(int re[100][4]){
 	//min player turn
 	int count = 0;
-	for (int i = 0; i < 7; i++){
-		for (int j = 0; j < 8; j++){
+	for (int i = 0; i < BOARD_ROWS; i++){
+		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j][0] < 0 && b[i][j][1] > 0){
 				//aka is a min piece
 				switch (b[i][j][0]){
@@ -796,7 +796,7 @@ void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 	}
 }
 bool moveInBounds(int to_row, int to_col){
-	return to_col >= 0 && to_col < 8 && to_row >= 0 && to_row < 7;
+	return to_col >= 0 && to_col < BOARD_COLS && to_row >= 0 && to_row < BOARD_ROWS;
 }
 void printboard(){
 	//example
@@ -810,9 +810,9 @@ void printboard(){
 	//	---------------------- -
 	//	A  B  C  D  E  F  G  H
 	cout << endl;
-	for (int i = 6; i >= 0; i--){
+	for (int i = BOARD_ROWS -1; i >= 0; i--){
 		cout << (i+1) << "  ";
-		for (int j = 0; j < 8; j++){
+		for (int j = 0; j < BOARD_COLS; j++){
 			if (b[i][j][0] == 0){
 				//empty square
 				cout << '-' << '-' << ' ';
