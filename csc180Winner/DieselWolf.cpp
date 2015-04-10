@@ -93,7 +93,7 @@ int evalCount = 0;
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 18;
+const int maxDepth = 17;
 
 
 
