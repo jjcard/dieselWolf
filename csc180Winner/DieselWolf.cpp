@@ -88,7 +88,7 @@ int killerMoves[100][numKillerMoves][4];
 int evalCount = 0;
 //const int maxEvalCount = 15899111;
 //const int maxEvalCount = 15011111;
-  const int maxEvalCount = 13550000;
+  const int maxEvalCount = 13550011;
 
 bool stopSearch = false;
 int currentMaxDepth = 2;
