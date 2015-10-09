@@ -1,9 +1,7 @@
-Due Friday Apr 3 at midnight (4 weeks).
 
 ********  TWO PLAYER GAMES - "GasTank Chess" ********
 
-For this year's two-player game assignment, we are going to implement a brand
-new board game created just for you.  The game is a sort of simplified version
+The game is a sort of simplified version
 of the famous boardgame "chess", with one major twist.  In our version, each
 piece is a bit like a car, that needs gas to run.  With each move that a piece
 makes, it uses up some of its gas.  If it ever runs out of gas, it can no longer
@@ -139,17 +137,6 @@ It must fulfill the following requirements:
    that each piece still has (henceforth we will refer to these numbers
    as "gastank values").
 
-   You are encouraged to make minor modifications to the display if you think
-   it is easier to see (or more fun) with different characters for the pieces.
-   If you want to make a graphical user interface, that's even better (although
-   you won't get extra credit for it).  But whatever you do, the axes MUST be
-   labeled, with row numbers and column letters, EXACTLY in the above manner. 
-
-   (If, like me, you use simple "ascii" output to System.out, as shown above, you
-    will probably find it a LOT easier to see the position if you use different
-    colors for the human's pieces versus the computer's pieces.  This is actually
-    very easy to do in Java with ansi escape sequences, and your instructor will
-    post the relevant code.  You are encouraged to add it to your program's display.)
 
 3. The human enters moves using the notation above, for the FROM square
    followed by the TO square.  For instance, in the position above, the
@@ -185,61 +172,12 @@ It must fulfill the following requirements:
    unique requirements, please make arrangements with me beforehand.
 
 
-STRATEGY AND OTHER REQUIREMENTS
-
-1. To get FULL credit, your program must satisfy the requirements listed
-   above, and also MUST use minimax search, at least 4 plies deep, with
-   alpha-beta pruning (correctly), to determine the computer's moves.
-   Refrain from trying to find a simple closed-form solution to the game,
-   as that would defeat the purpose of the assignment.
-
-2. You can use any programming language you want.  Any compiled
-   language that generates efficient code, such as C, C++, or even
-   Pascal or Fortran, are good choices.  You can also use Java, C#,
-   Python, Ruby, Perl, BASIC, Smalltalk, Scheme, LISP, Clojure, or
-   other interpreted languages, but don't be surprised if your code
-   searches 1 or 2 plies less than those written in C or C++.
-   If you want to use a language other than one of the ones mentioned
-   here, please see me first.
-
-3. You can decide whether you want to do a deep selective search, or a
-   more shallow but exhaustive (full-width) search.  Most programs like
-   this perform better with exhaustive search, because a selective search
-   would require an excellent heuristic to choose which moves to discard
-   -- otherwise it would risk failing to consider important possibilities.
-
-
 TOURNAMENT
 
 After the due date, we will have a "fun" tournament, in which your programs
 will play against each other.  This will give us a chance to compare the
 various strategies we used.  The tournament will be much more fun if you come
 up with a name for your program.  In fact, that is a requirement!
-Your instructor has already finished his program, and has named it "BUGGY",
-in reference to both cars and code.  BUGGY is pretty strong, but beatable.
 
-Submit your solution (the code) to your instructor using SacCT.  The code
-should be included in a ZIP file, along with a 2-3 page text file describing
-the following:
-
-      a. your program's NAME
-      b. instructions on how to install, run, and play against your program
-      c. what language it is written in
-      d. which techniques you used (alpha-beta, iterative deepening, history tables, etc.)
-      e. how deep it typically searches (how many plies), from the opening position,
-          and then later in the game
-      f. a brief explanation of the factors your program considers in its
-          terminal evaluation function
-      g. how strong you think it is -
-          - be specific (can it beat you?  has it played any of the other programs?)
-      h. anything unusual or unique about your program
-      i. any bugs you are aware of that cause it to crash or make illegal moves?
-      j. any bugs you are aware of that cause it to sometimes make bad moves?
-
-As the date of the tournament gets closer, your instructor will provide
-another handout with some very minor additional requirements that will help
-make the tournament run smoothly.
-
------
 
   
