@@ -3,30 +3,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include "DieselWolf.h"
 using namespace std;
-
-
-void computeMinimax();
-int min(int depth, int &maxFoundSoFar);
-int max(int depth, int &minFoundSoFar);
-int evaluateMax(int moves[100][4], int &moveCount, int depth);
-int evaluateMin(int moves[100][4], int &moveCount, int depth);
-void getPlayerMove();
-void setup();
-void printboard();
-void makeMove(int move[4], int pieceTaken[3]);
-void retractMove(int move[4], int pieceTaken[3]);
-int getPossibleMovesMin(int re[100][4]);
-int getPossibleMovesMax(int re[100][4]);
-bool moveInBounds(int to_col, int to_row);
-void moveKnight(int re[100][4], int &count, int i, int j, int kingVal);
-void moveKing(int re[100][4], int &count, int i, int j);
-void moveBishop(int re[100][4], int &count, int i, int j, int kingVal);
-bool foundWholeMove(int re[100][4], int count, int to_row, int to_col, int from_row, int from_col);
-bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col);
-void gameOver(bool maxPlayerOne);
-bool isPlayerGoingFirst();
-void sortMoves(int moves[100][4], int &moveCount, int depth);
 
 
 const int BOARD_ROWS = 7;
@@ -76,7 +54,6 @@ const int WIN_MIN =  -2000000;
 //[1, 0] [1, 1] [1, 2] [1, 3] [1, 4] [1, 5] [1, 6] [1, 7]
 //[0, 0] [0, 1] [0, 2] [0, 3] [0, 4] [0, 5] [0, 6] [0, 7]
 int b[BOARD_ROWS][BOARD_COLS][2];
-
 
 
 //the killer moves for the game
@@ -138,7 +115,6 @@ int evaluateMax(int moves[100][4], int &moveCount, int depth){
 		}
 		row--;
 	}
-	
 
 	for (int k = 0; k < moveCount; k++){
 		if (moves[k][2] == king_row && moves[k][3] == king_col){
