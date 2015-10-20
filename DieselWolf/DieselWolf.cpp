@@ -64,19 +64,18 @@ int killerMoves[100][numKillerMoves][4];
 
 //iterative deepening
 int evalCount = 0;
-//const int maxEvalCount = 15899111;
-//const int maxEvalCount = 15011111;
   const int maxEvalCount = 13550011;
 
 bool stopSearch = false;
 int currentMaxDepth = 2;
 //end game it will run forever, need to stop it somewhere
-const int maxDepth = 17;
+const int MAX_DEPTH = 17;
 
 
-
+//clock to display how long it took to decide a move
 clock_t start;
 double duration;
+
 int main(){
 	Setup();
 	bool playerGoingFirst = IsPlayerGoingFirst();
@@ -128,7 +127,6 @@ int EvaluateMax(int moves[100][4], int &moveCount, int depth){
 
 	//cout << "Didn't find move where I take their piece" << endl;
 	int curVal;
-	//int curFuel;
 	for (int i = BOARD_ROWS - 1; i >= 0; i--){
 		for (int j = 0; j < BOARD_COLS; j++){
 			curVal = b[i][j][0];
@@ -245,7 +243,7 @@ void ComputeMinimax(){
 						break;
 					}
 				}
-				if (stopSearch || currentMaxDepth >= maxDepth){
+				if (stopSearch || currentMaxDepth >= MAX_DEPTH){
 					break;
 				}
 				else {
@@ -280,7 +278,7 @@ void ComputeMinimax(){
 		//move up killer move pieces
 		for (int i = 2; i < currentMaxDepth - 1; i++){
 			for (int j = 0; j < numKillerMoves; j++){
-				killerMoves[i][j][0] = killerMoves[i + 2][j][0];
+				killerMoves[i][j][0] = killerMoves[i + 2][j][0];//+2 since +1 is the oppenents move, which they are about to take
 				killerMoves[i][j][1] = killerMoves[i + 2][j][1];
 				killerMoves[i][j][2] = killerMoves[i + 2][j][2];
 				killerMoves[i][j][3] = killerMoves[i + 2][j][3];
