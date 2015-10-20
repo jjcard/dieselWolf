@@ -78,22 +78,22 @@ const int maxDepth = 17;
 clock_t start;
 double duration;
 int main(){
-	setup();
-	bool playerGoingFirst = isPlayerGoingFirst();
-	printboard();
+	Setup();
+	bool playerGoingFirst = IsPlayerGoingFirst();
+	Printboard();
 	if (!playerGoingFirst){
-		computeMinimax();
-		printboard();
+		ComputeMinimax();
+		Printboard();
 	}
 	for (;;){
-		getPlayerMove();
-		printboard();
-		computeMinimax();
-		printboard();
+		GetPlayerMove();
+		Printboard();
+		ComputeMinimax();
+		Printboard();
 	}
 	
 }
-int evaluateMax(int moves[100][4], int &moveCount, int depth){
+int EvaluateMax(int moves[100][4], int &moveCount, int depth){
 	evalCount++;	
 	if (evalCount >= maxEvalCount){
 		stopSearch = true;
@@ -142,7 +142,7 @@ int evaluateMax(int moves[100][4], int &moveCount, int depth){
 
 	return eval;
 }
-int evaluateMin(int moves[100][4], int &moveCount, int depth){
+int EvaluateMin(int moves[100][4], int &moveCount, int depth){
 	evalCount++;
 	if (evalCount >= maxEvalCount){
 		stopSearch = true;
@@ -191,7 +191,7 @@ int evaluateMin(int moves[100][4], int &moveCount, int depth){
 
 	return eval;
 }
-bool isPlayerGoingFirst(){
+bool IsPlayerGoingFirst(){
 	cout << "Do you want to go first or second? (1/2) ";
 	int turn;
 
@@ -199,7 +199,7 @@ bool isPlayerGoingFirst(){
 	//have it choose 1 if they enter something weird
 	return turn != 2;
 }
-void computeMinimax(){
+void ComputeMinimax(){
 	start = clock();
 	int bestScore = BEST_MIN;
 	evalCount = 0;
@@ -207,9 +207,9 @@ void computeMinimax(){
 	int *currentBestMove;
 
 	int moves[100][4] ;
-	int count = getPossibleMovesMax(moves);
+	int count = GetPossibleMovesMax(moves);
 	if (count == 0){
-		gameOver(false);
+		GameOver(false);
 	}
 	else {
 		currentBestMove = moves[0];
@@ -234,13 +234,13 @@ void computeMinimax(){
 			while (true){
 				bestScore = BEST_MIN;
 				for (int i = 0; i < count; i++){
-					makeMove(moves[i], pieceTaken);
-					curScore = min(2, bestScore);
+					MakeMove(moves[i], pieceTaken);
+					curScore = Min(2, bestScore);
 					if (curScore > bestScore){
 						bestScore = curScore;
 						currentBestMove = moves[i];
 					}
-					retractMove(moves[i], pieceTaken);
+					RetractMove(moves[i], pieceTaken);
 					if (stopSearch){
 						break;
 					}
@@ -256,7 +256,7 @@ void computeMinimax(){
 		}
 
 		//make the best move
-		makeMove(bestMove, pieceTaken);
+		MakeMove(bestMove, pieceTaken);
 
 		//print out move in notation of screen coordinites
 		int from_row_act = bestMove[0] + 1;
@@ -274,7 +274,7 @@ void computeMinimax(){
 		cout << "And the max Depth was " << (currentMaxDepth -1) << endl;
 		//we captured their king!
 		if (pieceTaken[0] == KING_MIN){
-			gameOver(true);
+			GameOver(true);
 		}
 
 		//move up killer move pieces
@@ -288,33 +288,33 @@ void computeMinimax(){
 		}
 	}
 }
-int min(int depth, int &maxFoundSoFar){
+int Min(int depth, int &maxFoundSoFar){
 	
 	int moves[100][4];
-	int count = getPossibleMovesMin(moves);
+	int count = GetPossibleMovesMin(moves);
 	if (count == 0){
 		evalCount++;
 		//human can't move, so I win
 		return WIN_MAX - depth;
 	}
-	if (depth == currentMaxDepth){ return evaluateMin(moves, count, depth); }
+	if (depth == currentMaxDepth){ return EvaluateMin(moves, count, depth); }
 	int bestScore = BEST_MAX;
 
-	sortMoves(moves, count, depth);
+	SortMoves(moves, count, depth);
 	int curScore;
 	int pieceTaken[3];
 	for (int i = 0; i < count; i++){
-		makeMove(moves[i], pieceTaken);
+		MakeMove(moves[i], pieceTaken);
 		if (pieceTaken[0] == KING_MAX){
 			evalCount++;
 			//taken my king!
 			curScore = WIN_MIN + depth;
 		}
 		else {
-			curScore = max(depth + 1, bestScore);
+			curScore = Max(depth + 1, bestScore);
 		}
 
-		retractMove(moves[i], pieceTaken);		
+		RetractMove(moves[i], pieceTaken);		
 		
 		if (stopSearch){
 			return bestScore;
@@ -344,23 +344,23 @@ int min(int depth, int &maxFoundSoFar){
 	}
 	return bestScore;
 }
-int max(int depth, int &minFoundSoFar){
+int Max(int depth, int &minFoundSoFar){
 	
 	int moves[100][4];
-	int count = getPossibleMovesMax(moves);
+	int count = GetPossibleMovesMax(moves);
 	if (count == 0){
 		evalCount++;
 		//I can't move, so human wins
 		return WIN_MIN + depth;
 	}
-	if (depth == currentMaxDepth){ return evaluateMax(moves, count, depth); }
+	if (depth == currentMaxDepth){ return EvaluateMax(moves, count, depth); }
 	int bestScore = BEST_MIN;
 
-	sortMoves(moves, count, depth);
+	SortMoves(moves, count, depth);
 	int curScore;
 	int pieceTaken[3];
 	for (int i = 0; i < count; i++){
-		makeMove(moves[i], pieceTaken);
+		MakeMove(moves[i], pieceTaken);
 
 		if (pieceTaken[0] == KING_MIN){
 			evalCount++;
@@ -368,10 +368,10 @@ int max(int depth, int &minFoundSoFar){
 			curScore = WIN_MAX - depth;
 		}
 		else {
-			curScore = min(depth + 1, bestScore);
+			curScore = Min(depth + 1, bestScore);
 		}
 
-		retractMove(moves[i], pieceTaken);		
+		RetractMove(moves[i], pieceTaken);		
 		if (stopSearch){
 			return bestScore;
 		}
@@ -399,7 +399,7 @@ int max(int depth, int &minFoundSoFar){
 	}
 	return bestScore;
 }
-void sortMoves(int moves[100][4], int &moveCount, int depth){
+void SortMoves(int moves[100][4], int &moveCount, int depth){
 	//int (*killerMovesDepth)[4] = killerMoves[depth];
 	int *curMove;
 	int curSwapPosition = 0;
@@ -433,7 +433,7 @@ void sortMoves(int moves[100][4], int &moveCount, int depth){
 		}
 	}
 }
-void setup(){
+void Setup(){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 	//[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
 	//[4, 0] [4, 1] [4, 2] [4, 3] [4, 4] [4, 5] [4, 6] [4, 7]
@@ -480,8 +480,8 @@ void setup(){
 }
 
 //ends the game. true if I won, false if player won
-void gameOver(bool maxPlayerOne){
-	printboard();
+void GameOver(bool maxPlayerOne){
+	Printboard();
 	if (maxPlayerOne){
 		cout << "I won!" << endl;
 	}
@@ -494,13 +494,13 @@ void gameOver(bool maxPlayerOne){
 	exit(0);
 }
 //gets, validates and makes the players move
-void getPlayerMove(){
+void GetPlayerMove(){
 	
 	int moves[100][4];
-	int count = getPossibleMovesMin(moves);
+	int count = GetPossibleMovesMin(moves);
 	if (count == 0){
 		//he has no moves, I win
-		gameOver(true);
+		GameOver(true);
 	}
 	else {
 		cout << "Please Input Move: ";
@@ -514,7 +514,7 @@ void getPlayerMove(){
 		int from_col_act = from_col - 'A';
 		int to_col_act = to_col - 'A';
 
-		while (!isMovePossibleMin(moves, count, from_row_act, from_col_act, to_row_act, to_col_act)){
+		while (!IsMovePossibleMin(moves, count, from_row_act, from_col_act, to_row_act, to_col_act)){
 			cout << "Move not legal, please enter another move: ";
 			cin >> from_col >> from_row >> to_col >> to_row;
 
@@ -527,16 +527,16 @@ void getPlayerMove(){
 
 		int m[4] = { from_row_act, from_col_act, to_row_act, to_col_act };
 		int pieceTaken[3];
-		makeMove(m, pieceTaken);
+		MakeMove(m, pieceTaken);
 
 		if (pieceTaken[0] == KING_MAX){
 			//he took my king, he wins
-			gameOver(false);
+			GameOver(false);
 		}
 	}
 }
 //makes the move on the board
-void makeMove(int move[4], int pieceTaken[3]){
+void MakeMove(int move[4], int pieceTaken[3]){
 	int pVal = b[move[0]][move[1]][0];
 	int pFuel = b[move[0]][move[1]][1];
 	pieceTaken[0] = b[move[2]][move[3]][0];
@@ -553,7 +553,7 @@ void makeMove(int move[4], int pieceTaken[3]){
 	b[move[2]][move[3]][0] = pVal;
 	b[move[2]][move[3]][1] = pFuel;
 }
-void retractMove(int move[4], int pieceTaken[3]){
+void RetractMove(int move[4], int pieceTaken[3]){
 	
 	//pieceTaken[0] = taken's value
 	//pieceTaken[1] = taken's fuel
@@ -570,7 +570,7 @@ void retractMove(int move[4], int pieceTaken[3]){
 	b[move[2]][move[3]][0] = pieceTaken[0];
 	b[move[2]][move[3]][1] = pieceTaken[1];
 }
-int getPossibleMovesMax(int re[100][4]){
+int GetPossibleMovesMax(int re[100][4]){
 	//[6, 0] [6, 1] [6, 2] [6, 3] [6, 4] [6, 5] [6, 6] [6, 7]
 	//[5, 0] [5, 1] [5, 2] [5, 3] [5, 4] [5, 5] [5, 6] [5, 7]
 	//[4, 0] [4, 1] [4, 2] [4, 3] [4, 4] [4, 5] [4, 6] [4, 7]
@@ -587,17 +587,17 @@ int getPossibleMovesMax(int re[100][4]){
 
 				switch (b[i][j][0]){
 				case BISHOP_MAX:
-					moveBishop(re, count, i, j, KING_MAX);
+					MoveBishop(re, count, i, j, KING_MAX);
 					break;
 				case KNIGHT_MAX:
-					moveKnight(re, count, i, j, KING_MAX);
+					MoveKnight(re, count, i, j, KING_MAX);
 					break;
 				case QUEEN_MAX:
-					moveKnight(re, count, i, j, KING_MAX);
-					moveBishop(re, count, i, j, KING_MAX);
+					MoveKnight(re, count, i, j, KING_MAX);
+					MoveBishop(re, count, i, j, KING_MAX);
 					break;
 				case KING_MAX:
-					moveKing(re, count, i, j);
+					MoveKing(re, count, i, j);
 					break;
 				}
 			}
@@ -605,7 +605,7 @@ int getPossibleMovesMax(int re[100][4]){
 	}
 	return count;
 }
-int getPossibleMovesMin(int re[100][4]){
+int GetPossibleMovesMin(int re[100][4]){
 	//min player turn
 	int count = 0;
 	for (int i = 0; i < BOARD_ROWS; i++){
@@ -614,17 +614,17 @@ int getPossibleMovesMin(int re[100][4]){
 				//aka is a min piece
 				switch (b[i][j][0]){
 				case BISHOP_MIN:
-					moveBishop(re, count, i, j, KING_MIN);
+					MoveBishop(re, count, i, j, KING_MIN);
 					break;
 				case KNIGHT_MIN:
-					moveKnight(re, count, i, j, KING_MIN);
+					MoveKnight(re, count, i, j, KING_MIN);
 					break;
 				case QUEEN_MIN:
-					moveKnight(re, count, i, j, KING_MIN);
-					moveBishop(re, count, i, j, KING_MIN);
+					MoveKnight(re, count, i, j, KING_MIN);
+					MoveBishop(re, count, i, j, KING_MIN);
 					break;
 				case KING_MIN:
-					moveKing(re, count, i, j);
+					MoveKing(re, count, i, j);
 					break;
 				}
 			}
@@ -633,14 +633,14 @@ int getPossibleMovesMin(int re[100][4]){
 	return count;
 }
 //given possible moves for the player, sees if the move they want to do is valid
-bool isMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col){
-	return  foundWholeMove(re, count, to_row, to_col, from_row, from_col);
+bool IsMovePossibleMin(int re[100][4], int count, int from_row, int from_col, int to_row, int to_col){
+	return  FoundWholeMove(re, count, to_row, to_col, from_row, from_col);
 }
-void moveKing(int re[100][4], int &count, int i, int j){
+void MoveKing(int re[100][4], int &count, int i, int j){
 	//(+1, +1), (+1, 0), (+1, -1), (0, -1), (0, +1), (-1, 0), (-1, +1), (-1, -1) 
 
 	int to_row = i + 1, to_col = j + 1; //(+1, +1)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -648,7 +648,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_col = j; //to_row stays i+1 (+1, 0)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -656,7 +656,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_col = j - 1;//to_row stays i+1  (+1, -1)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -664,7 +664,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_row = i; //to_col stays i-1  (0, -1)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -672,7 +672,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_col = j + 1; //(0, +1)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -680,7 +680,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_row = i - 1; //(-1, +1)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -688,7 +688,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_col = j; //(-1, 0)
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -696,7 +696,7 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 	to_col = j - 1; // (-1, -1) 
-	if (moveInBounds(to_row, to_col)){
+	if (MoveInBounds(to_row, to_col)){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -704,11 +704,11 @@ void moveKing(int re[100][4], int &count, int i, int j){
 		count++;
 	}
 }
-void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
+void MoveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 	//(+2, +1), (+2, -1), (-2, +1), (-2, -1), (+1, +2), (+1, -2), (-1, +2), (-1, -2) 
 	//can't kill own king
 	int to_row = i + 2, to_col = j + 1; //(+2, +1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -716,7 +716,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j - 1; //(+2, -1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -724,7 +724,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i - 2;//(-2, -1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -732,7 +732,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j + 1;//(-2, +1)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -740,7 +740,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i + 1, to_col = j + 2; //(+1, +2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -748,7 +748,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j - 2; //(+1, -2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -756,7 +756,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_row = i - 1;//(-1, -2)
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -764,7 +764,7 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 	to_col = j + 2;
-	if (moveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
+	if (MoveInBounds(to_row, to_col) && b[to_row][to_col][0] != kingVal){
 		re[count][0] = i;
 		re[count][1] = j;
 		re[count][2] = to_row;
@@ -772,13 +772,13 @@ void moveKnight(int re[100][4], int &count, int i, int j, int kingVal){
 		count++;
 	}
 }
-void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
+void MoveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 	//goes 4 directions. goes until it either hits the end or captures a piece
 	//(-1, -1), (-1, +1), (+1, +1), (+1, -1)
 
 
 	int to_row = i - 1, to_col = j - 1;//(-1, -1)
-	while (moveInBounds(to_row, to_col)){
+	while (MoveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
@@ -796,7 +796,7 @@ void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 		}
 	}
 	to_row = i - 1, to_col = j + 1;//(-1, +1)
-	while (moveInBounds(to_row, to_col)){
+	while (MoveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
@@ -815,7 +815,7 @@ void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 	}
 
 	 to_row = i + 1, to_col = j + 1;//(+1, +1)
-	while (moveInBounds(to_row, to_col)){
+	while (MoveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
@@ -833,7 +833,7 @@ void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 		}
 	}
 	 to_row = i + 1, to_col = j - 1;//(+1, -1)
-	while (moveInBounds(to_row, to_col)){
+	while (MoveInBounds(to_row, to_col)){
 		int val = b[to_row][to_col][0];
 		if (val != kingVal){
 			re[count][0] = i;
@@ -851,10 +851,10 @@ void moveBishop(int re[100][4], int &count, int i, int j, int kingVal){
 		}
 	}
 }
-bool moveInBounds(int to_row, int to_col){
+bool MoveInBounds(int to_row, int to_col){
 	return to_col >= 0 && to_col < BOARD_COLS && to_row >= 0 && to_row < BOARD_ROWS;
 }
-void printboard(){
+void Printboard(){
 	//example
 	//  7  -- --B3 Q3 K3 B3 N3 --  computer
 	//	6  -- -- -- -- -- -- -- --
@@ -882,7 +882,7 @@ void printboard(){
 	cout << "--------------------------" << endl;
 	cout << "   A  B  C  D  E  F  G  H" << endl;
 }
-bool foundWholeMove(int moves[100][4], int count, int to_row, int to_col, int from_row, int from_col){
+bool FoundWholeMove(int moves[100][4], int count, int to_row, int to_col, int from_row, int from_col){
 	for (int i = 0; i < count; i++){
 		if (moves[i][0] == from_row && moves[i][1] == from_col && moves[i][2] == to_row && moves[i][3] == to_col){
 			return true;
